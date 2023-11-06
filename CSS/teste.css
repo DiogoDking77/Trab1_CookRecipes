@@ -1,34 +1,26 @@
 /* Estilos globais */
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    margin: 0%;
+    padding: 0%;
 }
 
-/* Estilos do cabeçalho */
-/* Estilos do cabeçalho */
-header {
+#tab {
     height: 125vh;
-    display: flex
+    background-image: url('../Images/FamilyCooking1.jpg');
+    background-size: 102.5% auto; /* Ajuste a largura automaticamente */
+    background-repeat: no-repeat;
+    background-position-x: center; /* Mantém a imagem centralizada na horizontal */
+    background-position-y: 30%; /* Ajuste o valor verticalmente conforme necessário */
+    background-attachment: fixed;
 }
-
-/* Imagem de fundo */
-.header-background-image {
-    
-    width:150%;
-    height: 100%;
-    z-index: -1;
-}
-
-
-
 
 
 .logo {
-    transform: scale(0.85);
+    width: 10%;
     position: absolute;
-    top: 5%;
-    left: 5%;
+    top: 6%;
+    left: 2.5%;
 }
 
 /* Estilos da seção de destaque (hero) */
@@ -37,17 +29,31 @@ header {
     padding: 25%;
 }
 
-
-
 .headline {
-    font-size: 200%;
-    color: #ffffff;
+    font-size: 250%;
+    background-image: linear-gradient(
+        to right,
+        #462523 0,
+        #cb9b51 22%, 
+        #f6e27a 45%,
+        #f6f2c0 50%,
+        #f6e27a 55%,
+        #cb9b51 78%,
+        #462523 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: -2.5%;
+    -webkit-text-stroke: 1px rgb(0, 0, 0); /* Adicione a borda branca ao texto */
 }
 
 .supporting-copy {
-    font-size: 175%;
+    font-size: 200%;
     color: #b0b0b0;
+    margin-bottom: -2.5%;
 }
+
 
 .hero-image {
     max-width: 100%;
