@@ -68,6 +68,7 @@ body {
 .search-bar input {
   flex-grow: 1;
   padding: 1%;
+  border-radius: 10px;
   margin-right: 1%;
   max-height: 8vh;
 }
@@ -79,6 +80,7 @@ body {
   border: none;
   cursor: pointer;
   max-height: 8vh;
+  border-radius: 10px;
 }
 
 .tab-bar:not(.hidden) {
@@ -173,15 +175,48 @@ body {
 }
 
 .principal {
-  /* Define a largura máxima para a div */
   max-width: 100%;
-  /* Define a altura da div. Pode ser ajustado conforme necessário. */
   height: 100vh;
-  /* Define a imagem como plano de fundo e ajusta o tamanho e posicionamento */
-  background: url('../Images/MesaDeComida2.jpg') no-repeat center center fixed;
+  background: url('../Images/MesaDeComida2.jpg') no-repeat center center;
   background-size: cover;
-  
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box; /* Garante que a borda seja contabilizada na largura e altura total */
+  border: 7.5px solid transparent;
+  border-image: linear-gradient(
+    to right,
+    #462523 0,
+    #cb9b51 22%, 
+    #f6e27a 45%,
+    #f6f2c0 50%,
+    #f6e27a 55%,
+    #cb9b51 78%,
+    #462523 100%
+  ) 1;
 }
+
+.logo2 {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50vh;
+  width: auto;
+}
+
+.circle {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 42.5vh;
+  width:42.5vh; /* Ajusta o tamanho do círculo conforme necessário */
+  background-color: #303030; /* Define a cor de fundo como transparente */
+  border: 2px solid gold; /* Adiciona bordas douradas ao círculo */
+  border-radius: 50%; /* Faz com que o elemento seja um círculo */
+}
+
+
 
 
 
@@ -190,11 +225,7 @@ body {
   width: auto;
 }
 
-.logo2{
-  position: absolute;
-  max-height: 15rem;
-  width: auto;
-}
+
 
 
 
