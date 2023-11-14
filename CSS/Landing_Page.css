@@ -14,13 +14,26 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background-color: #303030;
+  background: rgb(59, 59, 59);
+  background: linear-gradient(103deg, rgba(59, 59, 59, 1) 0%, rgba(91, 91, 91, 1) 98%);
   z-index: 100;
   transform: translateY(-100%);
   transition: transform 0.5s ease-in-out;
   display: flex;
   justify-content: space-between;
+
+  /* Adicionando cantos inferiores curvos */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+
+  /* Adicionando borda com gradiente no lado inferior */
+  border-bottom: 5px solid transparent;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%);
+  border-image-width: 1 1 5px 1; /* Ajuste este valor para a largura da borda */
 }
+
+
 
 .tab-bar img {
   position: absolute;
@@ -182,26 +195,13 @@ body {
   position: relative;
   overflow: hidden;
   box-sizing: border-box; /* Garante que a borda seja contabilizada na largura e altura total */
-  border: 7.5px solid transparent;
-  border-image: linear-gradient(
-    to right,
-    #462523 0,
-    #cb9b51 22%, 
-    #f6e27a 45%,
-    #f6f2c0 50%,
-    #f6e27a 55%,
-    #cb9b51 78%,
-    #462523 100%
-  ) 1;
+  display: grid;
 }
 
+
 .logo2 {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 50vh;
-  width: auto;
+  place-self: center;
+  height: 20vh;
 }
 
 .circle {
