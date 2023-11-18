@@ -15,16 +15,13 @@ body {
   left: 0;
   right: 0;
   background: rgb(59, 59, 59);
-  background: linear-gradient(103deg, rgba(59, 59, 59, 1) 0%, rgba(91, 91, 91, 1) 98%);
+  background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%,rgba(59, 59, 59, 1)  98%);
   z-index: 100;
   transform: translateY(-100%);
   transition: transform 0.5s ease-in-out;
   display: flex;
   justify-content: space-between;
 
-  /* Adicionando cantos inferiores curvos */
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
 
   /* Adicionando borda com gradiente no lado inferior */
   border-bottom: 5px solid transparent;
@@ -187,34 +184,65 @@ body {
   }
 }
 
+/* Estilos para a principal, independentemente do tamanho da viewport */
 .principal {
   max-width: 100%;
   height: 100vh;
-  background: url('../Images/MesaDeComida2.jpg') no-repeat center center;
+  background: url('../Images/cozinha.jpg') no-repeat center bottom;
   background-size: cover;
   position: relative;
   overflow: hidden;
-  box-sizing: border-box; /* Garante que a borda seja contabilizada na largura e altura total */
-  display: grid;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.card1 {
+  background: rgba(59, 59, 59, 0.95); /* cinza opaco */
+  border: 3px solid rgba(180, 124, 20, 1);
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 400px; /* ou o valor desejado */
+  text-align: center;
+}
+
+.card-content {
+  color: #fff; /* cor do texto no card */
+  width: 300px; /* Adjust this value to your preference */
+  margin: 0 auto;
+}
 
 .logo2 {
-  place-self: center;
-  height: 20vh;
+  height: 50%;
+  width: 50%;
 }
 
-.circle {
-  position: absolute;
-  top: 25%;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 42.5vh;
-  width:42.5vh; /* Ajusta o tamanho do círculo conforme necessário */
-  background-color: #303030; /* Define a cor de fundo como transparente */
-  border: 2px solid gold; /* Adiciona bordas douradas ao círculo */
-  border-radius: 50%; /* Faz com que o elemento seja um círculo */
+.slogan{
+  font-family: 'Raleway', sans-serif;
 }
+
+.btn {
+  background: linear-gradient(to top, #c0c0c0, #ababab);
+  border: 1px solid #f2c04a;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+.btn:hover {
+  background: linear-gradient(to top left, #9c690e, #b47c14, #f2c04a);
+}
+
+/* Adaptação para telas menores */
+@media screen and (max-width: 600px) {
+  .card {
+      max-width: 90%;
+  }
+}
+
+
+
 
 
 
