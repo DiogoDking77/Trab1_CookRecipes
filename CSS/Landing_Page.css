@@ -242,6 +242,61 @@ body {
 }
 
 
+.horizontal-list {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.horizontal-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  
+}
+
+.horizontal-list ul li {
+  display: inline-block;
+  margin-right: 10px;
+  
+}
+
+
+/* Style the recipe cards */
+.recipe-card {
+  width: 60vw;
+  height: 40vh;
+  max-width: 450px;
+  margin: 2.5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.recipe-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.recipe-card h3 {
+  margin: 2% 0;
+  font-size: 2.5vh;
+  white-space: break-spaces;
+}
+
+.recipe-card p {
+  font-size: 1.5vh;
+  line-height: 1.5;
+  margin: 6% 0;
+  white-space: break-spaces;
+  overflow: hidden;
+  /* Add "..." to the end of the text if it overflows */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
 
 
 
