@@ -31,23 +31,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Chame a função ao carregar a página para ocultar o cabeçalho inicialmente
     toggleHeaderVisibility();
   
-    document.querySelectorAll(".recipe-card").forEach((recipeCard) => {
-        recipeCard.addEventListener("mouseenter", () => {
-          const description = recipeCard.querySelector("p").textContent;
-      
-          // Cria o pop-up
-          const popup = document.createElement("div");
-          popup.classList.add("recipe-card-popup");
-          popup.textContent = description;
-      
-          // Posiciona o pop-up
-          popup.style.top = recipeCard.offsetTop;
-          popup.style.left = recipeCard.offsetLeft;
-      
-          // Adiciona o pop-up ao DOM
-          document.body.appendChild(popup);
-        });
-      });
       
 
       

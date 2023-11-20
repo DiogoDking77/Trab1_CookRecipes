@@ -266,7 +266,7 @@ body {
   width: 60vw;
   height: 40vh;
   max-width: 450px;
-  margin: 2.5px;
+  margin-right: 2.5px;
   background-color: #f2f2f2;
   padding: 20px;
   border-radius: 10px;
@@ -274,7 +274,7 @@ body {
 
 .recipe-card img {
   width: 100%;
-  height: 150px;
+  height: 50%;
   object-fit: cover;
   border-radius: 10px;
 }
@@ -282,13 +282,7 @@ body {
 .recipe-card h3 {
   margin: 2% 0;
   font-size: 2.5vh;
-  white-space: break-spaces;
-}
-
-.recipe-card p {
-  font-size: 1.5vh;
-  line-height: 1.5;
-  margin: 6% 0;
+  height: 15%;
   white-space: break-spaces;
   overflow: hidden;
   /* Add "..." to the end of the text if it overflows */
@@ -296,41 +290,232 @@ body {
   text-overflow: ellipsis;
 }
 
+.recipe-card p {
+  height: 30%;
+  font-size: 1.5vh;
+  line-height: 1.5;
+  margin: 1% 0;
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-clamp: 3; /* Set the line-clamp to 3 */
+}
 
 
 
+.divider {
+  font-size: 3vh;
+  display: flex;
+  color: #b47c14;
+  font-family: 'Raleway', sans-serif;
+  
+  &:before,
+  &:after {
+    content: "";
+    flex: 1;
+  }
+}
+
+.line {
+  align-items: center;
+  
+  &:before,
+  &:after {
+    height: 1px;
+    margin: 0 1em;
+  }
+}
+
+.double-razor {
+  &:before,
+  &:after {
+    height: 3px;
+    box-shadow:
+      0 -2px 0 #b47c14,
+      0 2px 0 #b47c14;
+    border: solid #b47c14;
+    border-width: 0;
+  }
+}
+
+.learn-total{
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  align-items: center;
+  
+}
+
+.learn-context {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  margin-inline: 2%;
+}
+
+.learn-content {
+  flex: 1;
+  padding: 20px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.celebrate-total {
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.celebrate-context {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.celebrate-image {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.celebrate-image img {
+  width: 100%; /* Torna a imagem responsiva à largura da área pai */
+  height: auto; /* Mantém a proporção da imagem */
+}
+
+.create-share-total {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.create-share-context {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  margin-right: 2%; /* Alterei de margin-inline para margin-right */
+  box-sizing: border-box; /* Adicionei esta linha para garantir que o padding não afete a largura total */
+}
+
+.create-share-image {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  margin-right: 2%; /* Alterei de margin-inline para margin-right */
+  box-sizing: border-box;
+  
+}
+
+.create-share-image img {
+  width: 100%; /* Torna a imagem responsiva à largura da área pai */
+  height: auto; /* Mantém a proporção da imagem */
+}
+
+.discover-context{
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+}
 
 
 
+.recipe-card-principal {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
 
-.hero-image{
-  max-height: 15rem;
-  width: auto;
+.card-total {
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.image-section {
+  flex: 1;
+  max-width: 50%;
+}
+
+.image-section img {
+  width: 100%;
+  max-height: 75%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.content-section {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 975px) {
+  .recipe-card-principal{
+    width: 100%;
+  }
+  .card-total {
+    flex-direction: column;
+    height: 25%;
+  }
+
+  .learn-total{
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .celebrate-total {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .celebrate-context,
+  .celebrate-image {
+    flex: none; /* Remove a propriedade flex: 1; */
+    max-width: 100%;
+  }
+
+  .create-share-total {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .create-share-context,
+  .create-share-image {
+    flex: none; /* Remove a propriedade flex: 1; */
+    max-width: 100%;
+  }
+
+  .image-section {
+    max-width: 100%;
+    height: 35%;
+  }
 }
 
 
 
 
 
+
+
+
+
   
-/*.headline {
-    
-    background-image: linear-gradient(
-        to right,
-        #462523 0,
-        #cb9b51 22%, 
-        #f6e27a 45%,
-        #f6f2c0 50%,
-        #f6e27a 55%,
-        #cb9b51 78%,
-        #462523 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin-bottom: -2.5%;
-    -webkit-text-stroke: 1px rgb(0, 0, 0); 
-}*/
+
 
 footer {
     background-color: #333;
