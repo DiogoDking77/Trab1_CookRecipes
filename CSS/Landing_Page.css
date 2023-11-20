@@ -17,7 +17,7 @@ body {
   background: rgb(59, 59, 59);
   background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%,rgba(59, 59, 59, 1)  98%);
   z-index: 100;
-  transform: translateY(-100%);
+  transform: translateY(-10vh);
   transition: transform 0.5s ease-in-out;
   display: flex;
   justify-content: space-between;
@@ -187,7 +187,7 @@ body {
 /* Estilos para a principal, independentemente do tamanho da viewport */
 .principal {
   max-width: 100%;
-  height: 100vh;
+  height: 110vh;
   background: url('../Images/cozinha.jpg') no-repeat center bottom;
   background-size: cover;
   position: relative;
@@ -427,6 +427,41 @@ body {
 
 
 
+
+
+.login-register-card-total {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+
+}
+
+.login-register-card-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-register-card-text {
+  font-size: 175%; /* Ajuste o tamanho do texto conforme necessário */
+  margin-bottom: 20px;
+  text-align: center; /* Adicione margem inferior para separar os botões */
+}
+
+.login-register-btn {
+  background: linear-gradient(to top left, #9c690e, #b47c14, #f2c04a);
+  border: 1px solid #f2c04a;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%; /* Botões ocupam 100% da largura do pai */
+}
+
+
 .recipe-card-principal {
   display: flex;
   flex-wrap: wrap;
@@ -506,7 +541,9 @@ body {
   }
 }
 
-
+.fab, .email {
+  color: #b47c14; /* Altere para a cor desejada */
+}
 
 
 
