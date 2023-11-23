@@ -1,0 +1,79 @@
+<div class="vote-card">
+    <div class="vote-header">
+      <h2>Create your Votation</h2>
+    </div>
+    <div class="vote-body">
+      <div class="vote-form">
+        <input type="text" class="vote-name" placeholder="Votation Name">
+        <input type="text" class="vote-theme" placeholder="Theme">
+        <input type="text" class="vote-description" placeholder="Description">
+        <input type="date" class="vote-start-date">
+        <input type="date" class="vote-end-date">
+        <div class="vote-options">
+          <input type="text" class="vote-option" placeholder="Option A">
+          <input type="text" class="vote-option" placeholder="Option B">
+          <input type="text" class="vote-option" placeholder="Option C">
+          <input type="text" class="vote-option" placeholder="Option D">
+        </div>
+      </div>
+    </div>
+    <div class="vote-footer">
+      <button class="vote-submit">Submit</button>
+    </div>
+  </div>
+
+  <style>
+    .vote-card {
+  width: 400px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.vote-header {
+  background-color: #ccc;
+  padding: 10px;
+}
+
+.vote-body {
+  padding: 10px;
+}
+
+.vote-form {
+  margin-bottom: 10px;
+}
+
+.vote-name,
+.vote-theme,
+.vote-description {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.vote-start-date,
+.vote-end-date {
+  width: 50%;
+  float: left;
+}
+
+.vote-options {
+  margin-bottom: 10px;
+}
+
+.vote-option {
+  width: 25%;
+  float: left;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.vote-submit {
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+  </style>

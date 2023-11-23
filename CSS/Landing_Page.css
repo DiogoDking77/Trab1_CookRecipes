@@ -1,10 +1,7 @@
 
-/* Estilos globais */
 body {
   font-family: Arial, sans-serif;
 }
-
-
 
 .tab-bar {
   width: 100%;
@@ -21,16 +18,11 @@ body {
   transition: transform 0.5s ease-in-out;
   display: flex;
   justify-content: space-between;
-
-
-  /* Adicionando borda com gradiente no lado inferior */
   border-bottom: 5px solid transparent;
   border-image-slice: 1;
   border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%);
-  border-image-width: 1 1 5px 1; /* Ajuste este valor para a largura da borda */
+  border-image-width: 1 1 5px 1;
 }
-
-
 
 .tab-bar img {
   position: absolute;
@@ -48,7 +40,7 @@ body {
   padding: 0;
   left: 15%;
   align-items: center !important;
-  border-bottom: none !important; /* Adiciona esta linha para remover a linha por baixo */
+  border-bottom: none !important;
 }
 
 .nav-tabs li {
@@ -60,11 +52,10 @@ body {
   text-decoration: none;
   color: white;
   font-weight: bold;
-  font-size: 2.5vh 2vw; /* Ajuste o valor conforme necessário */
+  font-size: 2.5vh 2vw;
   padding: 2vh;
   max-height: 6vh;
 }
-
 
 .search-bar {
   position: absolute;
@@ -97,12 +88,9 @@ body {
   transform: translateY(0);
 }
 
-
 .tab-bar:not(.hidden) {
   transform: translateY(0);
 }
-
-/* Código anterior permanece o mesmo */
 
 @media screen and (max-width: 900px) {
   .tab-bar img {
@@ -112,11 +100,10 @@ body {
     left: 5%;
   }
 
-  /* Adiciona estilos específicos para telas pequenas (pode ajustar a largura conforme necessário) */
   .nav-tabs {
-    display: none; /* Esconde a lista de navegação no modo de tela pequena */
+    display: none;
     position: absolute;
-    top: 10vh; /* Ajuste conforme necessário para evitar sobreposição com a barra */
+    top: 10vh;
     left: 0;
     background-color: #303030;
     width: 100%;
@@ -126,33 +113,32 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: auto; /* Redefine a altura para ajustar automaticamente ao conteúdo */
+    height: auto;
   }
 
   .nav-tabs.active {
-    display: flex; /* Exibe a lista de navegação quando o menu de hambúrguer está ativo */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza verticalmente os itens */
+    align-items: center;
   }
 
   .nav-tabs li {
     margin: 10px 0;
-    text-align: center; /* Centraliza horizontalmente os itens */
+    text-align: center;
   }
 
   .hamburger-menu {
     display: block;
     position: absolute;
-    top: 50%; /* Centraliza verticalmente */
+    top: 50%;
     right: 10px;
     cursor: pointer;
-    z-index: 2; /* Garante que o ícone do hambúrguer fique acima da search-bar */
-    transform: translateY(-50%); /* Centraliza verticalmente */
+    z-index: 2;
+    transform: translateY(-50%);
   }
 
-  /* Estiliza o ícone do hambúrguer, você pode substituir por uma imagem ou ícone personalizado se desejar */
   .hamburger-menu::before {
-    content: '\2630'; /* Código Unicode para o ícone de hambúrguer (pode variar) */
+    content: '\2630';
     font-size: 200%;
     color: white;
   }
@@ -162,7 +148,7 @@ body {
     display: flex;
     align-items: center;
     top: 50%;
-    right: 15vw; /* Ajuste conforme necessário para posicionar mais à direita */
+    right: 15vw;
     transform: translateY(-50%);
   }
 
@@ -184,7 +170,6 @@ body {
   }
 }
 
-/* Estilos para a principal, independentemente do tamanho da viewport */
 .principal {
   max-width: 100%;
   height: 110vh;
@@ -199,17 +184,17 @@ body {
 }
 
 .card1 {
-  background: rgba(59, 59, 59, 0.95); /* cinza opaco */
+  background: rgba(59, 59, 59, 0.95);
   border: 3px solid rgba(180, 124, 20, 1);
   border-radius: 10px;
   padding: 20px;
-  max-width: 400px; /* ou o valor desejado */
+  max-width: 400px;
   text-align: center;
 }
 
 .card-content {
-  color: #fff; /* cor do texto no card */
-  width: 300px; /* Adjust this value to your preference */
+  color: #fff;
+  width: 300px;
   margin: 0 auto;
 }
 
@@ -229,18 +214,15 @@ body {
   cursor: pointer;
 }
 
-
 .btn:hover {
   background: linear-gradient(to top left, #9c690e, #b47c14, #f2c04a);
 }
 
-/* Adaptação para telas menores */
 @media screen and (max-width: 600px) {
   .card {
       max-width: 90%;
   }
 }
-
 
 .horizontal-list {
   overflow: auto;
@@ -251,17 +233,13 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
-  
 }
 
 .horizontal-list ul li {
   display: inline-block;
   margin-right: 10px;
-  
 }
 
-
-/* Style the recipe cards */
 .recipe-card {
   width: 60vw;
   height: 40vh;
@@ -285,7 +263,6 @@ body {
   height: 15%;
   white-space: break-spaces;
   overflow: hidden;
-  /* Add "..." to the end of the text if it overflows */
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -298,17 +275,14 @@ body {
   white-space: pre-wrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-clamp: 3; /* Set the line-clamp to 3 */
+  line-clamp: 3;
 }
-
-
 
 .divider {
   font-size: 3vh;
   display: flex;
   color: #b47c14;
   font-family: 'Raleway', sans-serif;
-  
   &:before,
   &:after {
     content: "";
@@ -318,7 +292,6 @@ body {
 
 .line {
   align-items: center;
-  
   &:before,
   &:after {
     height: 1px;
@@ -338,46 +311,14 @@ body {
   }
 }
 
-.learn-total{
-  display: flex;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-  align-items: center;
-  
-}
-
-.learn-context {
-  flex: 1;
-  padding: 20px;
-  font-size: 175%;
-  text-align: center;
-  margin-inline: 2%;
-}
-
-.learn-content {
-  flex: 1;
-  padding: 20px;
-  flex: 1;
-  box-sizing: border-box;
-}
-
 .celebrate-total {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  box-sizing: border-box;
-  align-items: center;
 }
 
-.celebrate-context {
-  flex: 1;
-  padding: 20px;
-  font-size: 175%;
-  text-align: center;
-  box-sizing: border-box;
-}
-
+.celebrate-context,
 .celebrate-image {
-  flex: 1;
   padding: 20px;
   font-size: 175%;
   text-align: center;
@@ -385,38 +326,25 @@ body {
 }
 
 .celebrate-image img {
-  width: 100%; /* Torna a imagem responsiva à largura da área pai */
-  height: auto; /* Mantém a proporção da imagem */
+  width: 100%;
+  height: auto;
 }
 
 .create-share-total {
-  display: flex;
-  box-sizing: border-box;
   align-items: center;
 }
 
-.create-share-context {
-  flex: 1;
-  padding: 20px;
-  font-size: 175%;
-  text-align: center;
-  margin-right: 2%; /* Alterei de margin-inline para margin-right */
-  box-sizing: border-box; /* Adicionei esta linha para garantir que o padding não afete a largura total */
-}
-
+.create-share-context,
 .create-share-image {
-  flex: 1;
   padding: 20px;
   font-size: 175%;
   text-align: center;
-  margin-right: 2%; /* Alterei de margin-inline para margin-right */
   box-sizing: border-box;
-  
 }
 
 .create-share-image img {
-  width: 100%; /* Torna a imagem responsiva à largura da área pai */
-  height: auto; /* Mantém a proporção da imagem */
+  width: 100%;
+  height: auto;
 }
 
 .discover-context{
@@ -424,10 +352,6 @@ body {
   font-size: 175%;
   text-align: center;
 }
-
-
-
-
 
 .login-register-card-total {
   display: flex;
@@ -438,7 +362,6 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-sizing: border-box;
-
 }
 
 .login-register-card-total {
@@ -448,9 +371,9 @@ body {
 }
 
 .login-register-card-text {
-  font-size: 175%; /* Ajuste o tamanho do texto conforme necessário */
+  font-size: 175%;
   margin-bottom: 20px;
-  text-align: center; /* Adicione margem inferior para separar os botões */
+  text-align: center;
 }
 
 .login-register-btn {
@@ -458,13 +381,25 @@ body {
   border: 1px solid #f2c04a;
   border-radius: 10px;
   cursor: pointer;
-  width: 100%; /* Botões ocupam 100% da largura do pai */
+  width: 100%;
 }
 
-
-.recipe-card-principal {
+.learn-total{
   display: flex;
   flex-wrap: wrap;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.learn-context {
+  flex: 1;
+  padding: 20px;
+  font-size: 175%;
+  text-align: center;
+  margin-inline: 2%;
+}
+
+.recipe-card-principal {
   width: 100%;
   height: auto;
   background-color: #f2f2f2;
@@ -494,65 +429,26 @@ body {
 .content-section {
   flex: 1;
   width: 100%;
-  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.learn-content {
+  flex: 1;
   padding: 20px;
   box-sizing: border-box;
 }
 
 @media screen and (max-width: 975px) {
-  .recipe-card-principal{
-    width: 100%;
-  }
-  .card-total {
-    flex-direction: column;
-    height: 25%;
-  }
-
   .learn-total{
     flex-direction: column;
     width: 100%;
   }
-
-  .celebrate-total {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .celebrate-context,
-  .celebrate-image {
-    flex: none; /* Remove a propriedade flex: 1; */
-    max-width: 100%;
-  }
-
-  .create-share-total {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .create-share-context,
-  .create-share-image {
-    flex: none; /* Remove a propriedade flex: 1; */
-    max-width: 100%;
-  }
-
-  .image-section {
-    max-width: 100%;
-    height: 35%;
-  }
 }
 
 .fab, .email {
-  color: #b47c14; /* Altere para a cor desejada */
+  color: #b47c14;
 }
-
-
-
-
-
-
-
-  
-
 
 footer {
     background-color: #333;
