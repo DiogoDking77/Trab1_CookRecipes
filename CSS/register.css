@@ -1,0 +1,30 @@
+body{
+    max-width: 100%;
+    height: 110vh;
+    background: url('../Images/cozinha.jpg') no-repeat center bottom;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+    .gradient-custom-4 {
+        background: linear-gradient(to top, #c0c0c0, #ababab);
+    }
+
+    .gradient-custom-4:hover{
+        background: linear-gradient(to top left, #9c690e, #b47c14, #f2c04a);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    .custom-shadow:focus {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Adiciona sombra dourada ao foco */
+    }
+    
+    label, h2{
+        font-family: 'Raleway', sans-serif;
+    }
