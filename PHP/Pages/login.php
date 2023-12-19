@@ -1,3 +1,31 @@
+<?php
+require_once '../../Repositories/UserRepository.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    // Validar e processar a autenticação
+    if (!empty($email) && !empty($password)) {
+        $userRepository = new UserRepository();
+        $user = $userRepository->getUserByEmailAndPassword($email, $password);
+            
+        if ($user) {
+            // Usuário autenticado com sucesso
+            session_start();
+            $_SESSION['user_id'] = $user['User_ID'];
+            header('Location: dashboard.php'); // Redirecionar para a página do painel
+            exit;
+        } else {
+            $error_message = "Credenciais inválidas. Tente novamente.";
+        }
+    } else {
+        $error_message = "Por favor, preencha todos os campos.";
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +38,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../CSS/register.css">
+    <link rel="stylesheet" href="../../CSS/register.css">
 </head>
 <body>
         
@@ -22,70 +50,39 @@
                 
                     <h2 class="text-uppercase text-center mb-2 text-white">
                     <div class="d-flex justify-content-center">
-                        <img src="./../Images/Logo.png" alt="logo" class="w-50 h-50" >
+                        <img src="../../Images/Logo.png" alt="logo" class="w-50 h-50" >
                     </div>
                         Login
                     </h2>
-
-                    <?php
-                    include('config.php');
-
-                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                        $email = $_POST["form3Example3cg"];
-                        $password = $_POST["form3Example4cg"];
-                    
-                        $sql = "SELECT * FROM users WHERE User_Email='$email' AND User_Password='$password'";
-                        $result = $conn->query($sql);
-                    
-                        if ($result->num_rows > 0) {
-                            // Usuário autenticado com sucesso
-                            header("Location: dashboard.php"); // Redirecionar para a página de dashboard ou outra página após o login
-                            exit();
-                        } else {
-                            echo "Credenciais inválidas. Por favor, tente novamente.";
-                        }
-                    }
-                    
-                    $conn->close();
-                    ?>
-
-                        <form id="signupForm" method="post">
-
+                    <form method="post" action="login.php">
                         <div class="form-outline mb-2">
-                            <label class="form-label text-white" for="form3Example3cg">Your Email</label>
-                            <input type="email" id="form3Example3cg" name="form3Example3cg" class="form-control form-control-lg custom-shadow" />
+                            <label class="form-label text-white" for="email">Your Email</label>
+                            <input type="email" id="email" name="email" class="form-control form-control-lg custom-shadow" />
                         </div>
 
                         <div class="form-outline mb-2">
-                            <label class="form-label text-white" for="form3Example4cg">Password</label>
-                            <input type="password" id="form3Example4cg" name="form3Example4cg" class="form-control form-control-lg custom-shadow" />
+                            <label class="form-label text-white" for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control form-control-lg custom-shadow" />
                         </div>
 
                         <div class="d-flex justify-content-center">
                             <button type="submit" class="btn btn-block btn-lg gradient-custom-4 text-body">Enter</button>
                         </div>
 
+                        <?php if (isset($error_message)) : ?>
+                            <div class="alert alert-danger mt-3" role="alert">
+                                <?php echo $error_message; ?>
+                            </div>
+                        <?php endif; ?>
+
                         <p class="text-center mt-2 mb-0 text-white">Don't have an account? <a href="register.php" class="fw-bold text-white"><u>Register here</u></a></p>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function validateForm() {
-        var email = document.getElementById('form3Example3cg').value;
-        var password = document.getElementById('form3Example4cg').value;
-
-        if (email === '' || password === '') {
-            alert('Por favor, preencha todos os campos.');
-            return false;
-        }
-
-        return true;
-    }
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

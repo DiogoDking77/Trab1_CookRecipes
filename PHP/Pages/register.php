@@ -1,3 +1,36 @@
+<?php
+
+require_once '../../Repositories/UserRepository.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $userRepo = new UserRepository();
+
+    $username = $_POST['form3Example1cg'];
+    $email = $_POST['form3Example3cg'];
+    $password = $_POST['form3Example4cg'];
+    $repeatPassword = $_POST['form3Example4cdg'];
+
+    // Validação básica
+    if (empty($username) || empty($email) || empty($password) || empty($repeatPassword)) {
+        $error_message = "All fields are required.";
+    } elseif ($password !== $repeatPassword) {
+        $error_message = "Passwords do not match.";
+    } else {
+        // Verifica se o e-mail já está em uso
+        $existingUser = $userRepo->getUserByEmail($email);
+        if ($existingUser) {
+            $error_message = "Email already in use. Please choose a different email.";
+        } else {
+            // Adiciona o usuário
+            $userRepo->addUser($username, $email, $password);
+            echo "Registration successful! You can now log in.";
+        }
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +43,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../CSS/register.css">
+    <link rel="stylesheet" href="../../CSS/register.css">
 </head>
 <body>
         
@@ -20,28 +53,7 @@
             <div class="card" style="border-radius: 15px; background: rgba(59, 59, 59, 0.95); border: 3px solid rgba(180, 124, 20, 1);">
                 <div class="card-body p-5">
                     <h2 class="text-uppercase text-center mb-2 text-white">Create an account</h2>
-
-                    <?php
-                    include('config.php');
-
-                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                        $name = $_POST["form3Example1cg"];
-                        $email = $_POST["form3Example3cg"];
-                        $password = $_POST["form3Example4cg"];
-
-                        $sql = "INSERT INTO users (User_Name, User_Email, User_Password) VALUES ('$name', '$email', '$password')";
-
-                        if ($conn->query($sql) === TRUE) {
-                            log ("Registro inserido com sucesso!");
-                        } else {
-                            error_log ("Erro ao inserir registro: " . $conn->error);
-                        }
-                    }
-
-                    $conn->close();
-                    ?>
-
-                        <form id="signupForm" method="post" onsubmit="return validateForm();">
+                        <form id="signupForm" method="post" action="register.php">
 
                         <div class="form-outline mb-2">
                             <label class="form-label text-white" for="form3Example1cg">Your Name</label>
@@ -74,6 +86,12 @@
                             <button type="submit" class="btn btn-block btn-lg gradient-custom-4 text-body">Register</button>
                         </div>
 
+                        <?php if (isset($error_message)) : ?>
+                            <div class="alert alert-danger mt-3" role="alert">
+                                <?php echo $error_message; ?>
+                            </div>
+                        <?php endif; ?>
+
                         <p class="text-center mt-2 mb-0 text-white">Have already an account? <a href="login.php" class="fw-bold text-white"><u>Login here</u></a></p>
                     </form>
                 </div>
@@ -81,27 +99,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    function validateForm() {
-        var name = document.getElementById('form3Example1cg').value;
-        var email = document.getElementById('form3Example3cg').value;
-        var password = document.getElementById('form3Example4cg').value;
-        var repeatPassword = document.getElementById('form3Example4cdg').value;
-
-        if (name === '' || email === '' || password === '' || repeatPassword === '') {
-            alert('Por favor, preencha todos os campos.');
-            return false;
-        }
-
-        if (password !== repeatPassword) {
-            alert('As senhas não coincidem.');
-            return false;
-        }
-
-        return true;
-    }
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
