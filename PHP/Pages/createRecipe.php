@@ -1,14 +1,14 @@
 <?php
 
-require_once '../../Repositories/RecipeRepository.php';
-require_once '../../Repositories/IngredientRepository.php';
-require_once '../../Repositories/HintRepository.php';
-require_once '../../Repositories/NoteRepository.php';
-require_once '../../Repositories/PhotoRepository.php';
+require_once '../../Controllers/RecipeController.php';
+require_once '../../Controllers/IngredientController.php';
+require_once '../../Controllers/HintController.php';
+require_once '../../Controllers/NoteController.php';
+require_once '../../Controllers/PhotoController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $recipeRepository = new RecipeRepository();
-    $ingredientRepository = new IngredientRepository();
+    $recipeController = new RecipeController();
+    $ingredientController = new IngredientController();
 
     // Dados do formulário
     $recipeName = $_POST['recipeName'] ?? '';
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = 15; // ID do usuário padrão
 
     // Adiciona a receita
-    $recipeRepository->addRecipe($recipeName, $recipeDescription, $recipeInstructions, $userId);
+    $recipeController->addRecipe($recipeName, $recipeDescription, $recipeInstructions, $userId);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Retrieve ingredients array from AJAX request
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ingredientName = $ingredient['name'];
             $ingredientQuantity = $ingredient['quantity'];
             // Process the ingredient data as needed
-            $ingredientRepository->addIngredient($ingredientName, $ingredientQuantity,15);
+            $ingredientController->addIngredient($ingredientName, $ingredientQuantity,15);
         }
     
         // Rest of your PHP code...

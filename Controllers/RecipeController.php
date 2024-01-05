@@ -1,24 +1,33 @@
 <?php
 
-require_once __DIR__ . '/../PDO/RecipePDO.php';
+require_once __DIR__ . '/../DB/config.php';
 
 class RecipeController {
-    private $recipePDO;
+    private $pdo;
 
     public function __construct() {
-        $this->recipePDO = new RecipePDO();
+        $this->pdo = pdo_connection_mysql();
     }
 
     public function getRecipeById($recipeId) {
-        return $this->recipePDO->getRecipeById($recipeId);
+        $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE Recipe_ID = :recipeId");
+        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getAllRecipes() {
-        return $this->recipePDO->getAllRecipes();
+        $stmt = $this->pdo->query("SELECT * FROM Recipe");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function addRecipe($name, $description, $instructions, $userId) {
-        $this->recipePDO->addRecipe($name, $description, $instructions, $userId);
+        $stmt = $this->pdo->prepare("INSERT INTO Recipe (Recipe_Name, Recipe_Description, Recipe_Instructions, User_ID) VALUES (:name, :description, :instructions, :userId)");
+        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':instructions', $instructions, PDO::PARAM_STR);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
     }
 }
 

@@ -1,20 +1,26 @@
 <?php
 
-require_once __DIR__ . '/../PDO/HintPDO.php';
+require_once __DIR__ . '/../DB/config.php';
 
 class HintController {
-    private $hintPDO;
+    private $pdo;
 
     public function __construct() {
-        $this->hintPDO = new HintPDO();
+        $this->pdo = pdo_connection_mysql();
     }
 
     public function getHintsByRecipeId($recipeId) {
-        return $this->hintPDO->getHintsByRecipeId($recipeId);
+        $stmt = $this->pdo->prepare("SELECT * FROM Hint WHERE Recipes_ID = :recipeId");
+        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function addHint($hint, $recipeId) {
-        $this->hintPDO->addHint($hint, $recipeId);
+        $stmt = $this->pdo->prepare("INSERT INTO Hint (Hint, Recipes_ID) VALUES (:hint, :recipeId)");
+        $stmt->bindParam(':hint', $hint, PDO::PARAM_STR);
+        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+        $stmt->execute();
     }
 }
 

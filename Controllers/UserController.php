@@ -1,40 +1,52 @@
 <?php
 
-require_once __DIR__ . '/../PDO/UserPDO.php';
-
+require_once __DIR__ . '/../DB/config.php';
 
 class UserController {
-    private $userPDO;
+    private $pdo;
 
     public function __construct() {
-        $this->userPDO = new UserPDO();
+        $this->pdo = pdo_connection_mysql();
     }
 
     public function getUserById($userId) {
-        return $this->userPDO->getUserById($userId);
+        $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE User_ID = :userId");
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getAllUsers() {
-        return $this->userPDO->getAllUsers();
+        $stmt = $this->pdo->query("SELECT * FROM Users");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function addUser($username, $email, $password) {
-        $this->userPDO->addUser($username, $email, $password);
+        $stmt = $this->pdo->prepare("INSERT INTO Users (User_Name, User_Email, User_Password) VALUES (:username, :email, :password)");
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
+        $stmt->execute();
     }
 
-    // UserRepository.php
-    public function getUserByEmailAndPassword($email, $password) {
-        
-        $user = $this->userPDO->getUserByEmailAndPassword($email,$password);
+    public function getUserByEmailAndPassword($email,$password) {
+        $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE User_Email = :email AND User_Password = :password");
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+              
         return $user;
     }
 
     public function getUserByEmail($email) {
-        $user = $this->userPDO->getUserByEmail($email);
+        $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE User_Email = :email");
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+          
         return $user;
     }
-
-
     
 }
 

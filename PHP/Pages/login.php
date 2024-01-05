@@ -1,5 +1,5 @@
 <?php
-require_once '../../Repositories/UserRepository.php';
+require_once  '../../Controllers/UserController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
@@ -7,8 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validar e processar a autenticação
     if (!empty($email) && !empty($password)) {
-        $userRepository = new UserRepository();
-        $user = $userRepository->getUserByEmailAndPassword($email, $password);
+        $userController = new UserController();
+        $user = $userController->getUserByEmailAndPassword($email, $password);
             
         if ($user) {
             // Usuário autenticado com sucesso

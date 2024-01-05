@@ -1,20 +1,26 @@
 <?php
 
-require_once __DIR__ . '/../PDO/NotePDO.php';
+require_once __DIR__ . '/../DB/config.php';
 
 class NotesController {
-    private $notesPDO;
+    private $pdo;
 
     public function __construct() {
-        $this->notesPDO = new NotesPDO();
+        $this->pdo = pdo_connection_mysql();
     }
 
     public function getNotesByRecipeId($recipeId) {
-        return $this->notesPDO->getNotesByRecipeId($recipeId);
+        $stmt = $this->pdo->prepare("SELECT * FROM Notes WHERE Recipes_ID = :recipeId");
+        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function addNotes($notes, $recipeId) {
-        $this->notesPDO->addNotes($notes, $recipeId);
+        $stmt = $this->pdo->prepare("INSERT INTO Notes (Notes, Recipes_ID) VALUES (:notes, :recipeId)");
+        $stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
+        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+        $stmt->execute();
     }
 }
 

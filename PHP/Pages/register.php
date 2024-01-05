@@ -1,9 +1,9 @@
 <?php
 
-require_once '../../Repositories/UserRepository.php';
+require_once '../../Controllers/UserController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userRepo = new UserRepository();
+    $userRepo = new UserController();
 
     $username = $_POST['form3Example1cg'];
     $email = $_POST['form3Example3cg'];
