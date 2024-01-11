@@ -10,10 +10,16 @@ class PhotoController {
     }
 
     public function getPhotosByRecipeId($recipeId) {
-        $stmt = $this->pdo->prepare("SELECT * FROM Photos WHERE Recipes_ID = :recipeId");
-        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM Photos WHERE Recipes_ID = :recipeId");
+            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
     }
 
     public function addPhoto($photo, $recipeId) {

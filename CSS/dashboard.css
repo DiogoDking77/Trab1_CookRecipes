@@ -1,0 +1,37 @@
+.divider {
+    font-size: 3vh;
+    display: flex;
+    color: #b47c14;
+    font-family: 'Raleway', sans-serif;
+    &:before,
+    &:after {
+      content: "";
+      flex: 1;
+    }
+  }
+  
+  .line {
+    align-items: center;
+    &:before,
+    &:after {
+      height: 1px;
+      margin: 0 1em;
+    }
+  }
+  
+  .double-razor {
+    &:before,
+    &:after {
+      height: 3px;
+      box-shadow:
+        0 -2px 0 #b47c14,
+        0 2px 0 #b47c14;
+      border: solid #b47c14;
+      border-width: 0;
+    }
+  }
+
+
+  
+
+ 

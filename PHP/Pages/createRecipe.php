@@ -1,51 +1,9 @@
-<?php
-
-require_once '../../Controllers/RecipeController.php';
-require_once '../../Controllers/IngredientController.php';
-require_once '../../Controllers/HintController.php';
-require_once '../../Controllers/NoteController.php';
-require_once '../../Controllers/PhotoController.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $recipeController = new RecipeController();
-    $ingredientController = new IngredientController();
-
-    // Dados do formulário
-    $recipeName = $_POST['recipeName'] ?? '';
-    $recipeDescription = $_POST['recipeDescription'] ?? '';
-    $recipeInstructions = $_POST['recipeInstructions'] ?? '';
-    $userId = 15; // ID do usuário padrão
-
-    // Adiciona a receita
-    $recipeController->addRecipe($recipeName, $recipeDescription, $recipeInstructions, $userId);
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Retrieve ingredients array from AJAX request
-        $ingredients = json_decode($_POST['ingredients'], true);
-    
-        // Access individual ingredients
-        foreach ($ingredients as $ingredient) {
-            $ingredientName = $ingredient['name'];
-            $ingredientQuantity = $ingredient['quantity'];
-            // Process the ingredient data as needed
-            $ingredientController->addIngredient($ingredientName, $ingredientQuantity,15);
-        }
-    
-        // Rest of your PHP code...
-    }
-
-    // Redireciona para alguma página de sucesso ou outra ação após a criação da receita
-    header("Location: success.php");
-    exit();
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../../JavaScript/createRecipe.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -53,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../CSS/createRecipe.css">
-    <script src="../../JavaScript/createRecipe.js"> </script>   
     <style>
         .nav-item:hover .dropdown-menu {
             display: block;
@@ -106,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5 mb-5">
     <div class="card bg-style p-3">
         <h2 class="mb-4">Create Recipe</h2>
-        <form action="createRecipe.php" method="POST" enctype="multipart/form-data" id="recipeForm">
+        <form id="recipeForm">
             <div class="mb-3">
                 <label for="recipeName" class="form-label">Recipe Name</label>
                 <input type="text" class="form-control" id="recipeName" name="recipeName" required>
@@ -149,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="hint-group mb-2">
                         <div class="input-group">
                             <input type="text" class="form-control" name="hints[]" placeholder="Hint">
-                            <button type="button" class="btn btn-success btn-sm" onclick="toggleButtons(this)">Add</button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="addHint(this)">Add</button>
                         </div>
                     </div>
                 </div>
@@ -162,11 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="note-group mb-2">
                         <div class="input-group">
                             <input type="text" class="form-control" name="notes[]" placeholder="Note">
-                            <button type="button" class="btn btn-success btn-sm" onclick="toggleButtons(this)">Add</button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="addNote(this)">Add</button>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <div class="mb-3">
                 <h4>Upload Recipe Photos</h4>
@@ -181,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Hidden file input for initial and additional image selection -->
             </div>
-            <button type="submit" class="btn btn-primary">Create Recipe</button>
+            <button onclick="CreateRecipe()" class="btn btn-primary">Create Recipe</button>
         </form>
     </div>
 </div>

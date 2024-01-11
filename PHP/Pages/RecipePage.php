@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../../CSS/dashboard.css">
-    <script src="../../JavaScript/dashboard.js"> </script>   
+    <script src="../../JavaScript/RecipePage.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../CSS/RecipePage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -66,30 +66,11 @@
     </nav>
 
     <main>
-    
-        
-        <!-- Adicione uma lista com um ID específico para exibir as receitas -->
-        <h2 class="divider line double-razor">New Recipes</h2>
-        <div class="container-fluid mt-2">
-            <div class="d-flex flex-nowrap overflow-auto" id="recipesList">
-                <!-- Cards serão adicionadas aqui -->
-            </div>
+    <div class="container mt-5 mb-5">
+        <div class="card bg-style p-3">
+            
         </div>
-
-        <h2 class="divider line double-razor">Your Recipes</h2>
-
-        <h2 class="divider line double-razor">Most Favorited Recipes</h2>
-
-
-
-
-
-
-        <!-- Seu restante de conteúdo existente... -->
-
-        <!-- Adicione um script para lidar com a solicitação de receitas ao clicar no link -->
-        
-        
+    </div>
     </main>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

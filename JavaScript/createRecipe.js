@@ -35,56 +35,133 @@ function addIngredient() {
         document.getElementById('ingredientQuantity').value = '';
 
         // AJAX request to send ingredient data to PHP page
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'createRecipe.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        
-        // Convert the array to JSON and send it in the request
-        var ingredientsArray = [{ name: ingredientName, quantity: ingredientQuantity }];
-        xhr.send('ingredients=' + JSON.stringify(ingredientsArray));
     } else {
         alert('Please enter both ingredient name and quantity.');
     }
 }
 
+function addHint(button) {
+    // Obtenha o input e o botão dentro do grupo atual
+    var hintGroup = button.closest('.hint-group');
+    var inputField = hintGroup.querySelector('input');
+    var addButton = hintGroup.querySelector('button');
 
+    // Desative o input
+    inputField.disabled = true;
 
+    // Armazene o valor do input em um array do JavaScript
+    var hintArray = window.hintArray || [];
+    hintArray.push(inputField.value);
+    window.hintArray = hintArray;
 
-function toggleButtons(button) {
-    var inputGroup = $(button).closest('.input-group');
-    var inputField = inputGroup.find('input');
+    // Crie um novo input-group exatamente igual ao atual
+    var newHintGroup = hintGroup.cloneNode(true);
 
-    // Check if the input is not empty
-    if (!inputField.val().trim()) {
-        alert('Please enter a value before adding.');
-        return;
-    }
+    // Limpe o novo input e altere o botão para "Add" com cor verde
+    var newInputField = newHintGroup.querySelector('input');
+    newInputField.value = '';
+    newInputField.disabled = false;
 
-    // Disable input field
-    inputField.prop('disabled', true);
+    var newAddButton = newHintGroup.querySelector('button');
+    newAddButton.innerHTML = 'Add';
+    newAddButton.classList.remove('btn-danger');
+    newAddButton.classList.add('btn-success');
 
-    // Change button to "Delete"
-    $(button).removeClass('btn-success').addClass('btn-danger').text('Delete');
-    $(button).attr('onclick', 'removeItem(this)');
+    // Adicione o novo input-group após o atual
+    hintGroup.parentNode.insertBefore(newHintGroup, hintGroup.nextSibling);
 
-    // Add a new item field with "Add" button
-    var newItemFieldWithAdd = '<div class="' + (inputField.attr('name') === 'hints[]' ? 'hint-group' : 'note-group') + ' mb-2"><div class="input-group">';
-    newItemFieldWithAdd += '<input type="text" class="form-control" name="' + inputField.attr('name') + '" placeholder="' + inputField.attr('placeholder') + '">';
-    newItemFieldWithAdd += '<button type="button" class="btn btn-success btn-sm" onclick="toggleButtons(this)">Add</button>';
-    newItemFieldWithAdd += '</div></div>';
+    // Substitua a função de click do novo botão
+    newAddButton.setAttribute('onclick', 'addHint(this)');
 
-    // Append the new item field with "Add" button
-    if (inputField.attr('name') === 'hints[]') {
-        $('#hintContainer').append(newItemFieldWithAdd);
-    } else if (inputField.attr('name') === 'notes[]') {
-        $('#noteContainer').append(newItemFieldWithAdd);
-    }
+    // Adicione a função de delete para o botão atual
+    addButton.innerHTML = 'Delete';
+    addButton.classList.remove('btn-success');
+    addButton.classList.add('btn-danger');
+    addButton.setAttribute('onclick', 'deleteHint(this)');
 }
 
-function removeItem(button) {
-    // Remove the parent div of the clicked button (which contains both input and buttons)
-    $(button).closest('.note-group, .hint-group').remove();
+function deleteHint(button) {
+    // Obtenha o input e o botão dentro do grupo atual
+    var hintGroup = button.closest('.hint-group');
+    var inputField = hintGroup.querySelector('input');
+
+    // Remova o grupo de dicas atual
+    hintGroup.parentNode.removeChild(hintGroup);
+
+    // Remova o valor associado ao input desse grupo no array
+    var hintArray = window.hintArray || [];
+    var index = hintArray.indexOf(inputField.value);
+    if (index !== -1) {
+        hintArray.splice(index, 1);
+    }
+    window.hintArray = hintArray;
+
+    // Imprima o array no console
+    console.log(window.hintArray);
 }
+
+function addNote(button) {
+    // Obtenha o input e o botão dentro do grupo atual
+    var noteGroup = button.closest('.note-group');
+    var inputField = noteGroup.querySelector('input');
+    var addButton = noteGroup.querySelector('button');
+
+    // Desative o input
+    inputField.disabled = true;
+
+    // Armazene o valor do input em um array do JavaScript
+    var noteArray = window.noteArray || [];
+    noteArray.push(inputField.value);
+    window.noteArray = noteArray;
+
+    // Crie um novo input-group exatamente igual ao atual
+    var newNoteGroup = noteGroup.cloneNode(true);
+
+    // Limpe o novo input e altere o botão para "Add" com cor verde
+    var newInputField = newNoteGroup.querySelector('input');
+    newInputField.value = '';
+    newInputField.disabled = false;
+
+    var newAddButton = newNoteGroup.querySelector('button');
+    newAddButton.innerHTML = 'Add';
+    newAddButton.classList.remove('btn-danger');
+    newAddButton.classList.add('btn-success');
+
+    // Adicione o novo input-group após o atual
+    noteGroup.parentNode.insertBefore(newNoteGroup, noteGroup.nextSibling);
+
+    // Substitua a função de click do novo botão
+    newAddButton.setAttribute('onclick', 'addNote(this)');
+
+    // Adicione a função de delete para o botão atual
+    addButton.innerHTML = 'Delete';
+    addButton.classList.remove('btn-success');
+    addButton.classList.add('btn-danger');
+    addButton.setAttribute('onclick', 'deleteNote(this)');
+}
+
+function deleteNote(button) {
+    // Obtenha o input e o botão dentro do grupo atual
+    var noteGroup = button.closest('.note-group');
+    var inputField = noteGroup.querySelector('input');
+
+    // Remova o grupo de dicas atual
+    noteGroup.parentNode.removeChild(noteGroup);
+
+    // Remova o valor associado ao input desse grupo no array
+    var noteArray = window.noteArray || [];
+    var index = noteArray.indexOf(inputField.value);
+    if (index !== -1) {
+        noteArray.splice(index, 1);
+    }
+    window.noteArray = noteArray;
+
+    // Imprima o array no console
+    console.log(window.noteArray);
+}
+
+
+
 
 function handleFileSelect(event) {
     var files = event.target.files;
@@ -134,4 +211,69 @@ function addImageInput() {
     input.click();
 }
 
+function CreateRecipe() {
+    var RecipeName = document.getElementById('recipeName').value;
+    var RecipeDescription = document.getElementById('recipeDescription').value;
+    var RecipeInstructions = document.getElementById('recipeInstructions').value;
+    var ingredientArray = [];
+    var hintArray = window.hintArray || [];
+    var noteArray = window.noteArray || [];
 
+    // Coletar os arrays de ingredientes
+    var ingredientCols = document.querySelectorAll('#ingredientRow .col-auto');
+    ingredientCols.forEach(function (col) {
+        var ingredientName = col.querySelector('span').textContent.split(' (')[0];
+        var ingredientQuantity = col.querySelector('span').textContent.split('(')[1].split(')')[0];
+        ingredientArray.push({ name: ingredientName, quantity: ingredientQuantity });
+    });
+
+    var formData = new FormData();
+    formData.append('recipeName', RecipeName);
+    formData.append('recipeDescription', RecipeDescription);
+    formData.append('recipeInstructions', RecipeInstructions);
+    formData.append('ingredients', JSON.stringify(ingredientArray));
+    formData.append('hints', JSON.stringify(hintArray));
+    formData.append('notes', JSON.stringify(noteArray));
+
+    var xhr = new XMLHttpRequest();
+
+    // Configurar a requisição
+    xhr.open('POST', '../../Controllers/RecipeController.php', true);
+    
+    // Definir a função de retorno de chamada
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            try {
+                var responseData = JSON.parse(xhr.responseText);
+                
+                if (responseData.error) {
+                    console.error('Erro ao criar a receita: ' + responseData.error);
+                } else if (responseData.redirectUrl) {
+                    console.log('ID recebido. Redirecionando para ' + responseData.redirectUrl);
+                    window.location.href = responseData.redirectUrl;
+                } else {
+                    console.log('Resposta inesperada do servidor:', responseData);
+                }
+            } catch (error) {
+                console.error('Erro ao analisar a resposta JSON:', error);
+            }
+        } else {
+            // Houve um erro na requisição
+            console.error('Erro na requisição: ' + xhr.statusText);
+        }
+    };
+    
+    // Enviar a requisição
+    var jsonData = JSON.stringify({
+        recipeName: RecipeName,
+        recipeDescription: RecipeDescription,
+        recipeInstructions: RecipeInstructions,
+        ingredients: ingredientArray,
+        hints: hintArray,
+        notes: noteArray
+    });
+    
+    // Enviar a requisição com os dados JSON
+    xhr.send(jsonData);
+    
+}
