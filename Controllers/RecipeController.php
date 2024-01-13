@@ -31,7 +31,7 @@ class RecipeController {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getRecipesById($recipeId) {
+    public function getRecipesById($recipeId,$userLoggedIn) {
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE Recipe_ID = :recipeId");
             $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
@@ -47,6 +47,17 @@ class RecipeController {
 
             $notes = $this->notesController->getNotesByRecipeId($recipeId);
             $recipe['notes'] = $notes;
+
+            $ingredients = $this->ingredientController->getIngredientsByRecipeId($recipeId);
+            $recipe['ingredients'] = $ingredients;
+
+            $stmt = $this->pdo->prepare("SELECT * FROM Favorites WHERE User_ID = :userLoggedIn AND Recipe_ID = :recipe_id");
+            $stmt->bindParam(':userLoggedIn', $userLoggedIn, PDO::PARAM_STR);
+            $stmt->bindParam(':recipe_id', $recipeId, PDO::PARAM_STR);
+            $stmt->execute();
+            $rowCount = $stmt->rowCount();
+            $isFavorited = ($rowCount > 0);
+            $recipe['isFavorited'] = $isFavorited;
 
             // Retorne a resposta JSON
             header('Content-Type: application/json');
@@ -98,6 +109,69 @@ class RecipeController {
             exit;
         }
     }
+
+    public function getFavoriteRecipesByUserId($user_id) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT Recipe.* FROM Recipe
+                JOIN Favorites ON Recipe.Recipe_ID = Favorites.Recipe_ID
+                WHERE Favorites.User_ID = :user_id");
+    
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            $favoriteRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            foreach ($favoriteRecipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+    
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+            }
+    
+            return $favoriteRecipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+    
+    public function SetFavorites($recipe_id, $user_id){
+        try {
+            $stmt = $this->pdo->prepare("INSERT INTO Favorites (User_ID, Recipe_ID) VALUES (:user_id, :recipe_id)");
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+            $stmt->bindParam(':recipe_id', $recipe_id, PDO::PARAM_STR);
+
+            $stmt->execute();
+
+            // Retorna o ID da receita criada
+            return true;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function UndoFavorites($recipe_id, $user_id){
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM Favorites WHERE User_ID = :user_id AND Recipe_ID = :recipe_id");
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+            $stmt->bindParam(':recipe_id', $recipe_id, PDO::PARAM_STR);
+    
+            $stmt->execute();
+    
+            // Retorna true para indicar sucesso
+            return true;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+    
 
     public function addRecipe($name, $description, $instructions, $ingredients, $hints, $notes, $userId) {
         try {
@@ -170,13 +244,14 @@ if (isset($_GET['action'])) {
             }
         case 'getRecipesById':
             try {
-                // Verifique se o parâmetro recipeId está definido na solicitação
-                if (isset($_GET['recipeId'])) {
+                if (isset($_GET['recipeId'], $_GET['userId'])) {
                     // Acesso seguro ao parâmetro 'recipeId'
                     $recipeId = $_GET['recipeId'];
+                    $userLoggedIn = $_GET['userId'];
+
                     
                     // Obtenha detalhes da receita pelo ID
-                    $recipeDetails = $recipeController->getRecipesById($recipeId);
+                    $recipeDetails = $recipeController->getRecipesById($recipeId,$userLoggedIn);
         
                     // Envie a resposta como JSON
                     header('Content-Type: application/json');
@@ -193,6 +268,31 @@ if (isset($_GET['action'])) {
                 echo json_encode(['error' => 'Erro ao obter detalhes da receita: ' . $e->getMessage(), 'trace' => $e->getTrace()]);
                 exit;
             }
+            case 'getFavoriteRecipes':
+                try {
+                    // Verifique se o parâmetro recipeId está definido na solicitação
+                    if (isset($_GET['userId'])) {
+                        // Acesso seguro ao parâmetro 'recipeId'
+                        $userId = $_GET['userId'];
+                        
+                        // Obtenha detalhes da receita pelo ID
+                        $recipeDetails = $recipeController->getFavoriteRecipesByUserId($userId);
+            
+                        // Envie a resposta como JSON
+                        header('Content-Type: application/json');
+                        echo json_encode(['recipeDetails' => $recipeDetails]);
+                        exit;
+                    } else {
+                        // Se o parâmetro recipeId não estiver definido, envie uma resposta de erro
+                        header('Content-Type: application/json');
+                        echo json_encode(['error' => 'Parâmetro recipeId não definido']);
+                        exit;
+                    }
+                } catch (Exception $e) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Erro ao obter detalhes da receita: ' . $e->getMessage(), 'trace' => $e->getTrace()]);
+                    exit;
+                }
 
         // Adicione mais casos conforme necessário
 
@@ -206,39 +306,85 @@ if (isset($_GET['action'])) {
 
 
 // Verifica se os parâmetros esperados estão presentes
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $jsonData = file_get_contents('php://input');
-    $data = json_decode($jsonData, true);
-    if (isset($data['recipeName'], $data['recipeDescription'], $data['recipeInstructions'], $data['ingredients'], $data['hints'], $data['notes'])) {
-        // $recipeController = new RecipeController(); // Remova essa linha, pois já instanciamos no início
-        $recipeId = $recipeController->processFormData(
-            $data['recipeName'],
-            $data['recipeDescription'],
-            $data['recipeInstructions'],
-            $data['ingredients'],
-            $data['hints'],
-            $data['notes']
-        );
+$recipeController = new RecipeController(); // Mova a criação da instância para cá
 
-        if ($recipeId) {
-            header('Content-Type: application/json');
-            echo json_encode(['recipeId' => $recipeId, 'redirectUrl' => 'dashboard.php']);
-            exit;
-        } else {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Failed to create recipe']);
-            exit;
-        }
-    } else {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Invalid request or missing parameters']);
-        exit;
+// Verifica se os parâmetros esperados estão presentes
+
+if (isset($_POST['action'])) {
+    $action = $_POST['action'];
+
+    switch ($action) {
+        case 'addRecipe':
+            // Lógica para adicionar uma receita
+            if (isset($data['recipeName'], $data['recipeDescription'], $data['recipeInstructions'], $data['ingredients'], $data['hints'], $data['notes'])) {
+                $recipeId = $recipeController->processFormData(
+                    $data['recipeName'],
+                    $data['recipeDescription'],
+                    $data['recipeInstructions'],
+                    $data['ingredients'],
+                    $data['hints'],
+                    $data['notes']
+                );
+
+                if ($recipeId) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['recipeId' => $recipeId, 'redirectUrl' => 'dashboard.php']);
+                    exit;
+                } else {
+                    handleErrorResponse('Failed to create recipe');
+                }
+            } else {
+                handleErrorResponse('Invalid request or missing parameters');
+            }
+            break;
+
+        case 'SetFavorites':
+            if (isset($_POST['recipeId'], $_POST['userId'])) {
+                $result = $recipeController->SetFavorites($_POST['recipeId'], $_POST['userId']);
+                handleResult($result);
+            } else {
+                handleErrorResponse('Invalid request or missing parameters');
+            }
+            break;
+
+        case 'UndoFavorites':
+            if (isset($_POST['recipeId'], $_POST['userId'])) {
+                $result = $recipeController->UndoFavorites($_POST['recipeId'], $_POST['userId']);
+                handleResult($result);
+            } else {
+                handleErrorResponse('Invalid request or missing parameters');
+            }
+            break;
+
+        // Adicione mais casos conforme necessário
+
+        default:
+            handleErrorResponse('Ação inválida');
     }
 } else {
+    handleErrorResponse('Ação não definida');
+}
+
+
+// Função para lidar com sucesso
+function handleResult($result) {
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'Invalid request method']);
+    if ($result) {
+        echo json_encode(['success' => true]);
+    } else {
+        handleErrorResponse('Operation failed');
+    }
     exit;
 }
+
+// Função para lidar com erros
+function handleErrorResponse($errorMessage) {
+    header('Content-Type: application/json');
+    echo json_encode(['error' => $errorMessage]);
+    exit;
+}
+
+
 
 
 

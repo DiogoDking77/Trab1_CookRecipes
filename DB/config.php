@@ -255,6 +255,11 @@ function pdo_connection_mysql() {
             ('To prevent cracks, avoid overmixing the batter and don\'t overbake the cheesecake.', $cheesecakeID);
             ");
 
+            $pdo->exec("
+            INSERT INTO Hint (Hint, Recipes_ID) VALUES
+            ('Leave the cheesecake in the fridge to eat it fresh', $cheesecakeID);
+            ");
+
             // Insert a photo for Cheesecake
             $cheesecakePhotoPath = '../Images/Cheesecake.jpg';
 
@@ -343,6 +348,100 @@ function pdo_connection_mysql() {
             ($eggFriedRiceID, 20), -- Quick and Easy
             ($eggFriedRiceID, 28), 
             ($eggFriedRiceID, 32) 
+            ");
+
+            $pdo->exec("
+            INSERT INTO Recipe (Recipe_Name, Recipe_Description, Recipe_Instructions, User_ID) VALUES
+            ('Taco', 'Tacos are a traditional Mexican dish consisting of a folded or rolled tortilla filled with various ingredients, such as seasoned meat, beans, lettuce, and cheese.', 
+            '1. Cook seasoned meat (e.g., ground beef or chicken) in a pan until browned.\n2. Warm tortillas in a dry skillet or microwave.\n3. Assemble tacos by placing a portion of the cooked meat on each tortilla.\n4. Add desired toppings, such as shredded lettuce, diced tomatoes, cheese, and salsa.\n5. Fold or roll the tortilla to form a taco.\n6. Serve hot and enjoy!', 1);
+            ");
+
+            $tacoID = $pdo->lastInsertId();
+
+            // Insert ingredients for Taco
+            $tacoIngredients = [
+                ['Ground Beef', '1 lb'],
+                ['Tortillas', '8'],
+                ['Lettuce (shredded)', '1 cup'],
+                ['Tomatoes (diced)', '1 cup'],
+                ['Cheese (shredded)', '1 cup'],
+                ['Salsa', 'to taste'],
+            ];
+
+            foreach ($tacoIngredients as list($ingredientName, $ingredientQuantity)) {
+                $pdo->exec("
+                    INSERT INTO Ingredients (Ingredients_Name, Ingredients_Quantity, Recipes_ID) VALUES
+                    ('$ingredientName', '$ingredientQuantity', $tacoID);
+                ");
+            }
+
+            // Insert notes for Taco
+            $pdo->exec("
+                INSERT INTO Notes (Notes, Recipes_ID) VALUES
+                ('You can also add guacamole or sour cream as additional toppings.', $tacoID);
+            ");
+
+            // Insert hints for Taco
+            $pdo->exec("
+                INSERT INTO Hint (Hint, Recipes_ID) VALUES
+                ('Experiment with different seasonings for the meat, such as taco seasoning mix.', $tacoID);
+            ");
+
+            // Insert a photo for Taco
+            $tacoPhotoPath = '../Images/Mexican_Taco.jpg';
+
+            if (file_exists($tacoPhotoPath)) {
+                $tacoPhotoBase64 = base64_encode(file_get_contents($tacoPhotoPath));
+
+                $stmt = $pdo->prepare("
+                    INSERT INTO Photos (Photo, Recipes_ID) VALUES
+                    (:photoBase64, $tacoID);
+                ");
+
+                $stmt->bindParam(':photoBase64', $tacoPhotoBase64, PDO::PARAM_STR);
+                $stmt->execute();
+            } else {
+                exit('Failed to find the image file for Taco.');
+            }
+
+            $tacoPhotoPath = '../Images/Mexican_Taco2.jpg';
+
+            if (file_exists($tacoPhotoPath)) {
+                $tacoPhotoBase64 = base64_encode(file_get_contents($tacoPhotoPath));
+
+                $stmt = $pdo->prepare("
+                    INSERT INTO Photos (Photo, Recipes_ID) VALUES
+                    (:photoBase64, $tacoID);
+                ");
+
+                $stmt->bindParam(':photoBase64', $tacoPhotoBase64, PDO::PARAM_STR);
+                $stmt->execute();
+            } else {
+                exit('Failed to find the image file for Taco.');
+            }
+
+            $tacoPhotoPath = '../Images/Mexican_Taco3.jpg';
+
+            if (file_exists($tacoPhotoPath)) {
+                $tacoPhotoBase64 = base64_encode(file_get_contents($tacoPhotoPath));
+
+                $stmt = $pdo->prepare("
+                    INSERT INTO Photos (Photo, Recipes_ID) VALUES
+                    (:photoBase64, $tacoID);
+                ");
+
+                $stmt->bindParam(':photoBase64', $tacoPhotoBase64, PDO::PARAM_STR);
+                $stmt->execute();
+            } else {
+                exit('Failed to find the image file for Taco.');
+            }
+
+            // Associate Taco with categories
+            $pdo->exec("
+                INSERT INTO Recipe_Category (Recipe_ID, Category_ID) VALUES
+                ($tacoID, 5), -- Main Dishes
+                ($tacoID, 10), -- Mexican Recipe
+                ($tacoID, 28)  -- Quick and Easy
             ");
 
         } else {

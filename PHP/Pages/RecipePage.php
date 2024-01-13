@@ -1,17 +1,45 @@
+<?php
+// Inicie a sessão (se ainda não estiver iniciada)
+session_start();
+
+// Verifique se o 'user_id' está definido na sessão
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+} else {
+    // Se 'user_id' não estiver definido na sessão, redirecione para a página de login ou faça outra manipulação
+    header('Location: login.php');
+    exit(); // Certifique-se de encerrar o script após redirecionar
+}
+
+// Verifique se o ID da receita foi passado como parâmetro na URL
+if (isset($_GET['id'])) {
+    $recipeId = $_GET['id'];
+
+
+    // Restante do seu código...
+} else {
+    // Se o ID da receita não foi fornecido, você pode redirecionar o usuário ou mostrar uma mensagem de erro
+    echo "ID da receita não fornecido.";
+}
+?>
 
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="../../JavaScript/RecipePage.js"> </script>   
+    <script>
+        var userIdFromPHP = <?php echo json_encode($user_id); ?>;
+        console.log("User ID from PHP: " + userIdFromPHP);
+    </script>
+    <script src="../../JavaScript/RecipePage.js"> </script> 
+    <link rel="stylesheet" href="../../CSS/RecipePage.css">  
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../CSS/RecipePage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -68,7 +96,14 @@
     <main>
     <div class="container mt-5 mb-5">
         <div class="card bg-style p-3">
-            
+        <div id="recipe-details">
+            <!-- Os detalhes da receita serão adicionados aqui -->
+        </div>
+
+        <div id="photo-gallery">
+
+            <!-- A galeria de fotos será adicionada aqui -->
+        </div>
         </div>
     </div>
     </main>

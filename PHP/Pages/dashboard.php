@@ -1,10 +1,29 @@
+<?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+} else {
+    // Se 'user_id' não estiver definido na sessão, redirecione para a página de login ou faça outra manipulação
+    header('Location: login.php');
+    exit(); // Certifique-se de encerrar o script após redirecionar
+}
 
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: login.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../CSS/dashboard.css">
+    <script>
+        var userIdFromPHP = <?php echo json_encode($user_id); ?>;
+        console.log("User ID from PHP: " + userIdFromPHP);
+    </script>
     <script src="../../JavaScript/dashboard.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -56,6 +75,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Logout</a>
+                    </li>
                 </ul>
                 <form class="d-flex">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -79,6 +101,11 @@
         <h2 class="divider line double-razor">Your Recipes</h2>
 
         <h2 class="divider line double-razor">Most Favorited Recipes</h2>
+        <div class="container-fluid mt-2">
+            <div class="d-flex flex-nowrap overflow-auto" id="FavoriteList">
+                <!-- Cards serão adicionadas aqui -->
+            </div>
+        </div>
 
 
 
