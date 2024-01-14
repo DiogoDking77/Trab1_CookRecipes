@@ -43,3 +43,29 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     padding: 5px; /* Adiciona algum espaço para a borda ser visível */
 }
 
+/* Estilo para o efeito de desfoque */
+/* Estilo para o pop-up de compartilhamento */
+.share-popup {
+    background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); 
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(100px);
+    border: 5px solid rgba(156, 105, 14, 1);
+}
+
+.selected-user {
+    background-color: #f2f2f2; /* Adapte o código de cor conforme necessário */
+}
+
+/* Estilo para o corpo do documento quando o pop-up está aberto */
+body.no-scroll {
+    overflow: hidden;
+}
+
+.popup-style {
+    background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%);
+    border-bottom: 5px solid transparent;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%);
+    border-image-width: 1 1 5px 1;
+}

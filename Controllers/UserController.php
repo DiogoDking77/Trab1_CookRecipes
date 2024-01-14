@@ -21,6 +21,20 @@ class UserController {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getUsers($userId) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE user_id != :userId");
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+    
+
     public function addUser($username, $email, $password) {
         $stmt = $this->pdo->prepare("INSERT INTO Users (User_Name, User_Email, User_Password) VALUES (:username, :email, :password)");
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);

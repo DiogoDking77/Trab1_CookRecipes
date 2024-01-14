@@ -2,6 +2,7 @@
 
 
 require_once __DIR__ . '/../DB/config.php';
+require_once 'UserController.php';
 require_once 'IngredientController.php';
 require_once 'HintController.php';
 require_once 'NoteController.php';
@@ -16,6 +17,7 @@ class RecipeController {
     private $categoryController;
     public function __construct() {
         $this->pdo = pdo_connection_mysql();
+        $this->userController = new UserController();
         $this->ingredientController = new IngredientController();
         $this->hintsController = new HintController();
         $this->notesController = new NotesController();
@@ -228,12 +230,29 @@ class RecipeController {
             exit;
         }
     }
+    public function ShareRecipe($userId, $friendId, $recipeId) {
+        try{
+            $stmt = $this->pdo->prepare("INSERT INTO Shared_Recipes (Sharing_User_ID, Receiving_User_ID, Recipe_ID) VALUES (:sharing, :receiving, :recipeId)");
+            $stmt->bindParam(':sharing', $userId, PDO::PARAM_STR);
+            $stmt->bindParam(':receiving', $friendId, PDO::PARAM_STR);
+            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+        
+    }
     
     
 }
 $recipeController = new RecipeController();
 $photoController = new PhotoController();
 $categoriesController = new CategoryController();
+$usersController = new UserController();
 // Verifica o método da requisição
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['action'])) {
@@ -277,6 +296,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 header('Content-Type: application/json');
                 echo json_encode(['categories' => $categories]);
                 exit;
+            case 'GetUsers':
+                if (isset($_GET['userId'])) {
+                    $users = $usersController->getUsers($_GET['userId']);
+                    header('Content-Type: application/json');
+                    echo json_encode(['users' => $users]);
+                    exit;
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Parâmetros insuficientes para getFavoriteRecipes']);
+                    exit;
+                }
             default:
                 error_log("GET action not recognized: " . $action);
                 header('Content-Type: application/json');
@@ -292,12 +322,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
-        error_log("POST action: " . $action);
-
-        
     switch ($action) {
         case 'addRecipe':
-
             // Lógica para adicionar uma receita
             if (isset($_POST['action'], $_POST['recipeName'], $_POST['description'], $_POST['instructions'], $_POST['ingredientsArray'], $_POST['hintsArray'], $_POST['notesArray'], $_POST['userId'])) {
 
@@ -410,6 +436,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 exit;
             }
             break;
+        case 'ShareRecipe':
+            if (isset($_POST['userId'],$_POST['friendId'],$_POST['recipeId'])) {
+                $result = $recipeController->ShareRecipe($_POST['userId'],$_POST['friendId'],$_POST['recipeId']);
+        
+                // Envie a resposta como JSON
+                header('Content-Type: application/json');
+                echo json_encode($result);
+                exit;
+            } else {
+                // Se faltar algum parâmetro, envie uma resposta de erro
+                header('Content-Type: application/json');
+                echo json_encode(['error' => 'Invalid request or missing parameters']);
+                exit;
+            }
+            break;
         default:
             error_log("POST action not recognized: " . $action);
             header('Content-Type: application/json');
@@ -445,5 +486,4 @@ function handleErrorResponse($errorMessage) {
     echo json_encode(['error' => $errorMessage]);
     exit;
 }
-
 ?>

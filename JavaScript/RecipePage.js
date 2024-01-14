@@ -49,7 +49,7 @@ function displayRecipeDetails(recipe) {
         // Se for false, definir a classe do ícone como "far fa-heart"
         buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100  text-danger" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></button>';
     }
-    buttonsHtml += '<button class="btn btn-outline-light border-0"><i class="fas fa-share text-primary"></i></button>';    
+    buttonsHtml += '<button class="btn btn-outline-light border-0" onclick="ShareRecipe()"><i class="fas fa-share text-primary"></i></button>';    
     if (userIdFromPHP && userIdFromPHP === recipe[0].User_ID) {
         var urlParams = new URLSearchParams(window.location.search);
         var recipeId = urlParams.get('id');
@@ -241,6 +241,170 @@ function SetFavorites() {
             console.error('Erro ao favoritar a receita:', error);
         }
     });
+}
+
+var users;
+var selectedUsersIndex = [];
+var selectedUsers = [];
+
+function ShareRecipe() {
+    $.ajax({
+        url: '../../Controllers/RecipeController.php?action=GetUsers',
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            userId: userIdFromPHP
+        },
+        success: function(response) {
+            users = response.users;
+            displayUsersList(users);
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro na solicitação de receitas:', error);
+        }
+    });
+
+    var sharePopup = document.createElement('div');
+    sharePopup.classList.add('share-popup', 'position-fixed', 'top-50', 'start-50', 'translate-middle', 'p-4', 'shadow-lg');
+    sharePopup.innerHTML = `
+        <div class="d-flex justify-content-between p-2 rounded text-white">
+            <div>
+                <p>Share with Friends this Recipe</p>
+            </div>
+            <div>
+                <button type="button" class="btn-close btn-close-white " aria-label="Fechar" onclick="closeSharePopup()"></button>
+            </div>
+        </div>
+        <div id="userSearchResults"></div>
+        <button class="btn btn-primary" onclick="shareRecipe()">Share</button>
+    `;
+
+    document.body.appendChild(sharePopup);
+    document.body.style.overflow = 'hidden';
+    updateSearchResults();
+}
+
+function closeSharePopup() {
+    var sharePopup = document.querySelector('.share-popup');
+    if (sharePopup) {
+        sharePopup.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function displayUsersList(users) {
+    var sharePopup = document.querySelector('.share-popup');
+
+    var searchBarHtml = `
+        <input class="form-control me-2 mb-3" type="search" id="userSearchInput" placeholder="Search Users" aria-label="Search" oninput="updateSearchResults()">
+    `;
+
+    sharePopup.innerHTML += searchBarHtml;
+
+    var resultsContainer = document.createElement('div');
+    resultsContainer.id = 'userSearchResults';
+    sharePopup.appendChild(resultsContainer);
+
+    updateSearchResults();
+}
+
+function updateSearchResults() {
+    var resultsContainer = document.getElementById('userSearchResults');
+    resultsContainer.innerHTML = '';
+
+    // Adicionar usuários selecionados
+    if (selectedUsers.length > 0) {
+        resultsContainer.innerHTML += '<hr><p class="text-white">Selected Users:</p>';
+        for (var i = 0; i < selectedUsers.length; i++) {
+            var selectedUserItem = document.createElement('div');
+            selectedUserItem.classList.add('user-item', 'text-black', 'selected-user', 'mb-2', 'd-flex', 'justify-content-between', 'align-items-center');
+            selectedUserItem.innerHTML = `
+                <span>${selectedUsers[i].User_Name} - ${selectedUsers[i].User_Email}</span>
+                <button class="btn btn-danger btn-sm ms-auto" onclick="removeSelectedUser(${i})">Remove</button>`;
+            resultsContainer.appendChild(selectedUserItem);
+        }
+    }
+
+    // Filtrar usuários com base na pesquisa
+    var searchInput = document.getElementById('userSearchInput').value.trim().toLowerCase();
+    var filteredUsers = users.filter(function(user) {
+        return user.User_Name.toLowerCase().includes(searchInput) || user.User_Email.toLowerCase().includes(searchInput);
+    });
+
+    // Adicionar usuários filtrados
+    if (filteredUsers.length > 0) {
+        for (var i = 0; i < Math.min(5, filteredUsers.length); i++) {
+            var userItem = document.createElement('div');
+            userItem.classList.add('user-item', 'text-white');
+
+            // Usar um closure para capturar o valor do i no momento do loop
+            (function(index) {
+                userItem.addEventListener('click', function() {
+                    selectUser(index);
+                });
+            })(i);
+
+            userItem.innerHTML = `
+                <span>${filteredUsers[i].User_Name} - ${filteredUsers[i].User_Email}</span>
+                ${i < Math.min(4, filteredUsers.length - 1) ? '<hr>' : ''}`;
+            resultsContainer.appendChild(userItem);
+        }
+    } else if (selectedUsers.length === 0) {
+        resultsContainer.innerHTML += '<p>No results found.</p>';
+    }
+}
+
+
+function selectUser(index) {
+    // Obter o usuário correspondente ao índice
+    var user = users[index];
+
+    // Verificar se o usuário já está na lista de selecionados
+    if (!selectedUsers.includes(user)) {
+        selectedUsers.push(user);
+        selectedUsersIndex.push(index);
+    }
+
+    // Atualizar os resultados
+    updateSearchResults();
+}
+
+function shareRecipe() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var recipeId = urlParams.get('id');
+
+    // Adicionar log para verificar selectedUsers
+    console.log('selectedUsers:', selectedUsers);
+
+    // Obtenha os IDs dos usuários selecionados
+    
+
+
+    // Realize a iteração sobre os IDs dos usuários selecionados
+    selectedUsers.forEach(function(friendId) {
+        console.log(userIdFromPHP,friendId.User_ID,recipeId);
+        $.ajax({
+            url: '../../Controllers/RecipeController.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'ShareRecipe',
+                userId: userIdFromPHP,
+                friendId: friendId.User_ID,
+                recipeId: recipeId
+            },
+            success: function(response) {
+                // Lógica de sucesso (se necessário)
+                console.log('Compartilhado com sucesso com o usuário de ID ' + friendId);
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao compartilhar com o usuário de ID ' + friendId + ':', error);
+            }
+        });
+    });
+
+    // Feche o pop-up após compartilhar
+    closeSharePopup();
 }
 
 
