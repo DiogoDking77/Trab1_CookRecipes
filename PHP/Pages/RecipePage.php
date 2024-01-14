@@ -65,7 +65,7 @@ if (isset($_GET['id'])) {
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="dashboard.php">Home</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -79,7 +79,7 @@ if (isset($_GET['id'])) {
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Create Recipe</a>
+                        <a class="nav-link text-white" href="createRecipe.php">Create Recipe</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Categories</a>
@@ -107,6 +107,30 @@ if (isset($_GET['id'])) {
         </div>
     </div>
     </main>
+
+    <footer class="text-white" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-top: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 0 1;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 text-center mt-2">
+                    <p>Follow me on Social Networks:</p>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="#" target="_blank"><i class="fab fa-facebook"></i></a></li>
+                        <li class="list-inline-item"><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li class="list-inline-item"><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                        <li class="list-inline-item"><a href="#" target="_blank"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6 text-center mt-2">
+                    <p>Get in touch:</p>
+                    <p>Email: <a href="mailto:diogo.reis@ipvc.pt" class="email">diogo.reis@ipvc.pt</a></p>
+                    <p>Telephone: (123) 456-7890</p>
+                </div>
+                <div class="col-md-12 text-center mt-3">
+                    <p>&copy; 2023 Diogo Reis. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

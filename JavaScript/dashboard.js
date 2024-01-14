@@ -2,11 +2,15 @@
 
 
 document.addEventListener("DOMContentLoaded", function() {
+
     // Fazer uma solicitação AJAX
     $.ajax({
-        url: '../../Controllers/RecipeController.php?action=getRecipes',
+        url: '../../Controllers/RecipeController.php',
         method: 'GET',
         dataType: 'json',
+        data: {
+            action: 'getRecipes',
+        },
         success: function(response) {
             // Limpar a lista de receitas
             $("#recipesList").empty();
@@ -46,15 +50,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // Adicionar as receitas à lista
                 $.each(response.recipes, function(index, recipe) {
-                    var imgElement = $('<img>').attr('src', 'data:image/jpeg;base64,' + recipe.photos[0].Photo)
-                        .addClass('card-img-top center-cropped')
-                        .attr('alt', recipe.Recipe_Name)
-                        .css({
-                            'object-fit': 'cover',
-                            'width': '100%',
-                            'height': '40%', // Ajuste a altura conforme necessário
-                            'object-position': 'center center' // Ajuste a posição conforme necessário
-                        });
+                    var imgElement;
+
+    // Verificar se há fotos na receita
+                    if (recipe.photos && recipe.photos.length > 0) {
+                        // Se houver fotos, use a primeira foto
+                        imgElement = $('<img>').attr('src', 'data:image/jpeg;base64,' + recipe.photos[0].Photo)
+                            .addClass('card-img-top center-cropped')
+                            .attr('alt', recipe.Recipe_Name)
+                            .css({
+                                'object-fit': 'cover',
+                                'width': '100%',
+                                'height': '40%', // Ajuste a altura conforme necessário
+                                'object-position': 'center center' // Ajuste a posição conforme necessário
+                            });
+                    } else {
+                        // Se não houver fotos, use um ícone de imagem padrão
+                        imgElement = $('<i>').addClass('fas fa-image fa-5x text-secondary d-flex justify-content-center align-items-center')
+                            .css({
+                                'width': '100%',
+                                'height': '40%', // Ajuste a altura conforme necessário
+                            });
+                    }
                 
                     // Criar o card com a imagem e o título
                     var cardTitle = $('<h5>').addClass('card-title overflow-hidden').text(recipe.Recipe_Name)
@@ -101,15 +118,16 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Erro na solicitação de receitas:', error);
+            console.error('Erro na solicitação de receitas favoritas:', error);
         }
     });
     $.ajax({
-        url: '../../Controllers/RecipeController.php?action=getFavoriteRecipes',
+        url: '../../Controllers/RecipeController.php', // Adicione a ação aqui
         method: 'GET',
         dataType: 'json',
         data: {
-            userId: userIdFromPHP // Substitua 1 pelo valor real do ID da receita desejada
+            action: 'getFavoriteRecipes', // Adicione a ação aqui
+            userId: userIdFromPHP // Substitua 1 pelo valor real do ID do usuário
         },
         success: function(response) {
             // Limpar a lista de receitas
@@ -152,15 +170,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // Adicionar as receitas à lista
                 $.each(response.recipeDetails, function(index, recipe) {
-                    var imgElement = $('<img>').attr('src', 'data:image/jpeg;base64,' + recipe.photos[0].Photo)
-                        .addClass('card-img-top center-cropped')
-                        .attr('alt', recipe.Recipe_Name)
-                        .css({
-                            'object-fit': 'cover',
-                            'width': '100%',
-                            'height': '40%', // Ajuste a altura conforme necessário
-                            'object-position': 'center center' // Ajuste a posição conforme necessário
-                        });
+                    var imgElement;
+
+    // Verificar se há fotos na receita
+                    if (recipe.photos && recipe.photos.length > 0) {
+                        // Se houver fotos, use a primeira foto
+                        imgElement = $('<img>').attr('src', 'data:image/jpeg;base64,' + recipe.photos[0].Photo)
+                            .addClass('card-img-top center-cropped')
+                            .attr('alt', recipe.Recipe_Name)
+                            .css({
+                                'object-fit': 'cover',
+                                'width': '100%',
+                                'height': '40%', // Ajuste a altura conforme necessário
+                                'object-position': 'center center' // Ajuste a posição conforme necessário
+                            });
+                    } else {
+                        // Se não houver fotos, use um ícone de imagem padrão
+                        imgElement = $('<i>').addClass('fas fa-image fa-5x text-secondary d-flex justify-content-center align-items-center')
+                            .css({
+                                'width': '100%',
+                                'height': '40%', // Ajuste a altura conforme necessário
+                            });
+                    }
                 
                     // Criar o card com a imagem e o título
                     var cardTitle = $('<h5>').addClass('card-title overflow-hidden').text(recipe.Recipe_Name)
@@ -207,7 +238,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Erro na solicitação de receitas:', error);
+            console.error('Erro na solicitação de receitas favoritas:', error);
         }
     });
     

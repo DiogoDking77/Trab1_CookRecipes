@@ -20,14 +20,14 @@ if (isset($_SESSION['user_id'])) {
         var userIdFromPHP = <?php echo json_encode($user_id); ?>;
         console.log("User ID from PHP: " + userIdFromPHP);
     </script>
-    <script src="../../JavaScript/createRecipe.js"> </script>   
+    <script src="../../JavaScript/editRecipe.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../CSS/createRecipe.css">
+    <link rel="stylesheet" href="../../CSS/editRecipe.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <style>
@@ -65,7 +65,7 @@ if (isset($_SESSION['user_id'])) {
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="createRecipe.php">Create Recipe</a>
+                    <a class="nav-link text-white" href="editRecipe.php">Create Recipe</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="#">Categories</a>
@@ -162,7 +162,7 @@ if (isset($_SESSION['user_id'])) {
                 <!-- Hidden file input for initial and additional image selection -->
 
             </div>
-            <button onclick="CreateRecipe()" class="btn btn-primary">Create Recipe</button>
+            <button onclick="editRecipe()" class="btn btn-primary">Confirm Recipe</button>
     </div>
     </div>
 </div>

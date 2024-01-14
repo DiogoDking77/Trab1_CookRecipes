@@ -1,3 +1,6 @@
+// Inicialize a variável global ingredientsArray
+var ingredientsArray = [];
+
 function addIngredient() {
     // Get values from input fields
     var ingredientName = document.getElementById('ingredientName').value;
@@ -5,6 +8,14 @@ function addIngredient() {
 
     // Check if both fields are filled
     if (ingredientName.trim() !== '' && ingredientQuantity.trim() !== '') {
+        // Adicione o ingrediente ao array
+        var ingredient = {
+            name: ingredientName,
+            quantity: ingredientQuantity
+        };
+
+        ingredientsArray.push(ingredient);
+
         // Create a new column for the ingredient
         var ingredientCol = document.createElement('div');
         ingredientCol.className = 'col-auto mb-2';
@@ -20,6 +31,12 @@ function addIngredient() {
         removeButton.className = 'btn btn-danger btn-sm ms-2';
         removeButton.innerHTML = 'X';
         removeButton.onclick = function() {
+            // Remove o ingrediente do array
+            var index = ingredientsArray.indexOf(ingredient);
+            if (index !== -1) {
+                ingredientsArray.splice(index, 1);
+            }
+
             ingredientCol.remove();
         };
 
@@ -33,6 +50,9 @@ function addIngredient() {
         // Clear input fields
         document.getElementById('ingredientName').value = '';
         document.getElementById('ingredientQuantity').value = '';
+
+        // Agora, ingredientsArray contém todos os ingredientes adicionados
+        console.log(ingredientsArray);
 
         // AJAX request to send ingredient data to PHP page
     } else {
@@ -160,120 +180,138 @@ function deleteNote(button) {
     console.log(window.noteArray);
 }
 
+let imageArray = [];
 
+function handleImageUpload(event) {
+    const previewArea = document.getElementById("photoPreview");
 
+    for (let i = 0; i < event.target.files.length; i++) {
+        const file = event.target.files[i];
 
-function handleFileSelect(event) {
-    var files = event.target.files;
-
-    // Display preview for each selected file
-    for (var i = 0; i < files.length; i++) {
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-            var previewContainer = document.createElement('div');
-            previewContainer.className = 'col-md-3 mb-3';
-
-            var preview = document.createElement('img');
-            preview.className = 'img-thumbnail';
-            preview.src = e.target.result;
-
-            previewContainer.appendChild(preview);
-            document.getElementById('photoPreview').appendChild(previewContainer);
+        // Converte a imagem para base64 sem prefixo
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            const base64Data = reader.result.split(',')[1]; // Remove o prefixo
+            addImageToPreview(base64Data);
         };
-
-        reader.readAsDataURL(files[i]);
+        reader.readAsDataURL(file);
     }
 }
 
-// Function to add more image input fields
-function addImageInput() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.className = 'form-control visually-hidden'; // Added a class to hide the input visually
-    input.name = 'recipePhotos[]';
-    input.accept = 'image/*';
-    input.multiple = true;
+function addImageToPreview(base64Data) {
+    // Add image preview
+    const previewElement = document.createElement("div");
+    previewElement.classList.add("col-md-3", "mb-3", "position-relative");
+    previewElement.innerHTML = `
+        <img src="data:image/png;base64,${base64Data}" class="img-fluid" alt="Preview">
+        <button type="button" class="btn btn-danger position-absolute top-0 start-0" onclick="removeImage(this)">Remove</button>
+    `;
 
-    // Add an event listener to the new input field
-    input.addEventListener('change', handleFileSelect);
+    // Adiciona o preview à área de visualização
+    const previewArea = document.getElementById("photoPreview");
+    previewArea.appendChild(previewElement);
 
-    // Create a label to trigger the file input
-    var label = document.createElement('label');
-    label.className = 'btn btn-secondary'; // Style the label like a button
-    label.innerHTML = 'Add More Images';
-    label.appendChild(input);
-
-    // Append the label to the photoPreview div
-    document.getElementById('photoPreview').insertAdjacentElement('beforeend', label);
-
-    // Trigger click event to open the file dialog
-    input.click();
+    // Armazena os dados base64 no array
+    imageArray.push(base64Data);
 }
+
+
+
+function removeImage(element) {
+    // Remove preview
+    const index = Array.from(element.parentNode.parentNode.children).indexOf(element.parentNode);
+    element.parentNode.remove();
+
+    // Remove base64 from array
+    imageArray.splice(index, 1);
+}
+
+// Function to add more image input fields
 
 function CreateRecipe() {
-    var RecipeName = document.getElementById('recipeName').value;
-    var RecipeDescription = document.getElementById('recipeDescription').value;
-    var RecipeInstructions = document.getElementById('recipeInstructions').value;
-    var ingredientArray = [];
-    var hintArray = window.hintArray || [];
-    var noteArray = window.noteArray || [];
+    console.log(imageArray)
+    var recipeName = document.getElementById("recipeName").value;
+    var recipeDescription = document.getElementById("recipeDescription").value;
+    var recipeInstructions = document.getElementById("recipeInstructions").value;
 
-    // Coletar os arrays de ingredientes
-    var ingredientCols = document.querySelectorAll('#ingredientRow .col-auto');
-    ingredientCols.forEach(function (col) {
-        var ingredientName = col.querySelector('span').textContent.split(' (')[0];
-        var ingredientQuantity = col.querySelector('span').textContent.split('(')[1].split(')')[0];
-        ingredientArray.push({ name: ingredientName, quantity: ingredientQuantity });
-    });
-
-    var formData = new FormData();
-    formData.append('recipeName', RecipeName);
-    formData.append('recipeDescription', RecipeDescription);
-    formData.append('recipeInstructions', RecipeInstructions);
-    formData.append('ingredients', JSON.stringify(ingredientArray));
-    formData.append('hints', JSON.stringify(hintArray));
-    formData.append('notes', JSON.stringify(noteArray));
-
-    var xhr = new XMLHttpRequest();
-
-    // Configurar a requisição
-    xhr.open('POST', '../../Controllers/RecipeController.php', true);
-    
-    // Definir a função de retorno de chamada
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            try {
-                var responseData = JSON.parse(xhr.responseText);
-                
-                if (responseData.error) {
-                    console.error('Erro ao criar a receita: ' + responseData.error);
-                } else if (responseData.redirectUrl) {
-                    console.log('ID recebido. Redirecionando para ' + responseData.redirectUrl);
-                    window.location.href = responseData.redirectUrl;
-                } else {
-                    console.log('Resposta inesperada do servidor:', responseData);
-                }
-            } catch (error) {
-                console.error('Erro ao analisar a resposta JSON:', error);
-            }
-        } else {
-            // Houve um erro na requisição
-            console.error('Erro na requisição: ' + xhr.statusText);
+    $.ajax({
+        url: '../../Controllers/RecipeController.php',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'addRecipe',
+            recipeName: recipeName,
+            description: recipeDescription,
+            instructions: recipeInstructions,
+            ingredientsArray: ingredientsArray,
+            hintsArray: hintArray,
+            notesArray: noteArray,
+            userId: userIdFromPHP,
+        },
+        success: function(response) {
+            console.log('Ação enviada do lado do cliente:', 'addPhoto');
+            console.log('recipeId:', response.recipeId);
+            console.log('Imagens:', imageArray);
+            InsertImages(response.recipeId)
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao criar a receita:', error);
         }
-    };
-    
-    // Enviar a requisição
-    var jsonData = JSON.stringify({
-        recipeName: RecipeName,
-        recipeDescription: RecipeDescription,
-        recipeInstructions: RecipeInstructions,
-        ingredients: ingredientArray,
-        hints: hintArray,
-        notes: noteArray
     });
-    
-    // Enviar a requisição com os dados JSON
-    xhr.send(jsonData);
+
     
 }
+
+function InsertImages(recipeId) {
+    console.log('Função InsertImages chamada com recipeId:', recipeId);
+
+    // Inicializa a contagem de imagens processadas
+    var processedImagesCount = 0;
+
+    // Itera sobre o array de imagens e envia cada uma para o servidor
+    imageArray.forEach(function(base64Data, index) {
+        $.ajax({
+            url: '../../Controllers/RecipeController.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'addPhotos',
+                recipeId: recipeId,
+                imageIndex: index, // Para identificar a ordem da imagem
+                imageData: base64Data
+            },
+            success: function(response) {
+                console.log('Imagem adicionada com sucesso:', response);
+
+                // Incrementa a contagem de imagens processadas
+                processedImagesCount++;
+
+                // Verifica se todas as imagens foram processadas
+                if (processedImagesCount === imageArray.length) {
+                    // Todas as imagens foram processadas, redireciona para addCategorys
+                    window.location.href = '../../PHP/Pages/addCategories.php?id=' + recipeId;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao adicionar a imagem:', error);
+
+                // Incrementa a contagem de imagens processadas (mesmo em caso de erro)
+                processedImagesCount++;
+
+                // Verifica se todas as imagens foram processadas
+                if (processedImagesCount === imageArray.length) {
+                    // Todas as imagens foram processadas, redireciona para addCategorys
+                    window.location.href = '../../PHP/Pages/addCategories.php?id=' + recipeId;
+                }
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+

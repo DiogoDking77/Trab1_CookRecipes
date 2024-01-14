@@ -25,6 +25,19 @@ document.addEventListener("DOMContentLoaded", function() {
     
 });
 
+function generateCategoryTags(categories) {
+    var categoryTags = '';
+    for (var i = 0; i < categories.length; i++) {
+        categoryTags += '<span class="badge badge-secondary mx-1 rounded badge badge-secondary my-1 mx-1 rounded bg-style" style="font-size: 75%; background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%);">' + categories[i].Category_Name + '</span>';
+    }
+    return categoryTags;
+}
+
+function editarReceita(recipeId, userId) {
+    // Redirecionar para a página com os parâmetros necessários
+    window.location.href = '../../PHP/Pages/editRecipe.php?recipeId=' + recipeId + '&userId=' + userId;
+}
+
 function displayRecipeDetails(recipe) {
 
 // Adiciona os botões condicionalmente
@@ -38,8 +51,14 @@ function displayRecipeDetails(recipe) {
     }
     buttonsHtml += '<button class="btn btn-outline-light border-0"><i class="fas fa-share text-primary"></i></button>';    
     if (userIdFromPHP && userIdFromPHP === recipe[0].User_ID) {
-        buttonsHtml += '<button class="btn btn-outline-success">Editar</button>';
+        var urlParams = new URLSearchParams(window.location.search);
+        var recipeId = urlParams.get('id');
+
+        buttonsHtml += '<button class="btn btn-outline-success" onclick="editarReceita(' + recipeId+ ',' + userIdFromPHP + ')">Editar</button>';
     }
+    
+    
+    
 
     
 
@@ -56,22 +75,53 @@ function displayRecipeDetails(recipe) {
     ingredientsTable += recipe.ingredients.map(ingredient => `<tr><td>${ingredient.Ingredients_Name}</td><td>${ingredient.Ingredients_Quantity}</td></tr>`).join('');
     ingredientsTable += '</tbody></table>';
 
+    var categoryTags = generateCategoryTags(recipe.categories);
+    var categoryContainer = $('<div>').addClass('category-container d-flex flex-nowrap overflow-auto mb-1 mt-1').css({'width': '100%', 'height' : '5%'});
+    categoryContainer.append(categoryTags);
+
+    var mainPhotoHtml;
+
+    // Verificar se há fotos na receita
+    if (recipe.photos && recipe.photos.length > 0 && recipe.photos[0].Photo) {
+        // Se houver fotos, use a primeira foto
+        mainPhotoHtml = `
+            <img src="data:image/jpeg;base64,${recipe.photos[0].Photo}" alt="Main Photo" class="card-img-top center-cropped" style="
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+                border-radius: 15px; 
+                background: rgba(59, 59, 59, 0.95); 
+                border: 3px solid rgba(180, 124, 20, 1);">
+                <span style="position: absolute; bottom: 5%; left: 5%; background-color: rgba(59, 59, 59, 0.95); color: white; padding: 5px; border: 2px solid #b47c14; display: inline-block; font-family: 'Raleway', sans-serif;" class="rounded display-6 px-2">${recipe[0].Recipe_Name}</span>
+        `;
+    } else {
+        // Se não houver fotos, use um ícone de imagem padrão
+        mainPhotoHtml = `
+            <i class="fas fa-image fa-5x text-secondary d-flex justify-content-center align-items-center" style="
+                width: 100%;
+                height: 100%;
+                border-radius: 15px; 
+                background: rgba(59, 59, 59, 0.95); 
+                border: 3px solid rgba(180, 124, 20, 1);">
+            </i>
+            <span style="position: absolute; bottom: 5%; left: 5%; background-color: rgba(59, 59, 59, 0.95); color: white; padding: 5px; border: 2px solid #b47c14; display: inline-block; font-family: 'Raleway', sans-serif;" class="rounded display-6 px-2">${recipe[0].Recipe_Name}</span>
+        `;
+    }
+
+console.log(categoryTags)
+
     var recipeDetailsHtml = `
     <div class="row">
         <div class="col-12">
             <div class="center-cropped-container" style="height: 60vh; overflow: hidden; position: relative;">
-                <img src="data:image/jpeg;base64,${recipe.photos[0].Photo}" alt="Main Photo" class="card-img-top center-cropped" style="
-                    object-fit: cover;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 15px; 
-                    background: rgba(59, 59, 59, 0.95); 
-                    border: 3px solid rgba(180, 124, 20, 1);">
-                    <span style="position: absolute; bottom: 5%; left: 5%; background-color: rgba(59, 59, 59, 0.95); color: white; padding: 5px; border: 2px solid #b47c14; display: inline-block; font-family: 'Raleway', sans-serif;" class="rounded display-6 px-2">${recipe[0].Recipe_Name}</span>
+                ${mainPhotoHtml}
             </div>
         </div>
         <div class="col-12">
             ${buttonsHtml}
+        </div>
+        <div class="col-12 category-container d-flex flex-nowrap overflow-auto mb-1 mt-1">
+            ${categoryTags}
         </div>
         <div class="col-md-12">
             <p>${recipe[0].Recipe_Description}</p>

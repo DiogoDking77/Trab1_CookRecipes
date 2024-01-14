@@ -26,14 +26,35 @@ class CategoryController {
             exit;
         }
     }
+
+    public function getCategories() {
+        try {
+            $stmt = $this->pdo->query("SELECT * FROM Category");
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $categories;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
     
 
-    public function addHint($hint, $recipeId) {
-        echo($recipeId);
-        $stmt = $this->pdo->prepare("INSERT INTO Hint (Hint, Recipes_ID) VALUES (:hint, :recipeId)");
-        $stmt->bindParam(':hint', $hint, PDO::PARAM_STR);
-        $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
-        $stmt->execute();
+    public function addCategory($categoryId, $recipeId) {
+        try{
+            $stmt = $this->pdo->prepare("INSERT INTO Recipe_Category (Category_ID, Recipe_ID) VALUES (:categoryId, :recipeId)");
+            $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_STR);
+            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+        
     }
 }
 

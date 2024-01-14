@@ -23,11 +23,22 @@ class HintController {
     }
 
     public function addHint($hint, $recipeId) {
-        echo($recipeId);
         $stmt = $this->pdo->prepare("INSERT INTO Hint (Hint, Recipes_ID) VALUES (:hint, :recipeId)");
         $stmt->bindParam(':hint', $hint, PDO::PARAM_STR);
         $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
         $stmt->execute();
+    }
+
+    public function deleteHints($recipeId) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM Hint WHERE Recipes_ID = :recipeId");
+            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
     }
 }
 

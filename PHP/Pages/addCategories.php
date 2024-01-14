@@ -10,7 +10,19 @@ if (isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit(); // Certifique-se de encerrar o script após redirecionar
 }
+
+// Verifique se o ID da receita foi passado como parâmetro na URL
+if (isset($_GET['id'])) {
+    $recipeId = $_GET['id'];
+
+
+    // Restante do seu código...
+} else {
+    // Se o ID da receita não foi fornecido, você pode redirecionar o usuário ou mostrar uma mensagem de erro
+    echo "ID da receita não fornecido.";
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -20,22 +32,25 @@ if (isset($_SESSION['user_id'])) {
         var userIdFromPHP = <?php echo json_encode($user_id); ?>;
         console.log("User ID from PHP: " + userIdFromPHP);
     </script>
-    <script src="../../JavaScript/createRecipe.js"> </script>   
+    <script src="../../JavaScript/addCategories.js"> </script> 
+    <link rel="stylesheet" href="../../CSS/addCategories.css">  
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../CSS/createRecipe.css">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <style>
         .nav-item:hover .dropdown-menu {
             display: block;
         }
     </style>
 </head>
+
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
@@ -79,93 +94,23 @@ if (isset($_SESSION['user_id'])) {
     </div>
 </nav>
 
-<div class="container mt-5 mb-5">
-    <div class="card bg-style p-3">
-        <h2 class="mb-4">Create Recipe</h2>
-        <div id="recipeForm">
-        <div class="mb-3">
-            <label for="recipeName" class="form-label">Recipe Name</label>
-            <input type="text" class="form-control" id="recipeName" name="recipeName" required>
+<div class="container mt-5 mb-5 d-flex flex-column" style="min-height: 100vh">
+    
+    <div class="card bg-style p-3 mb-3 flex-grow-1">
+    <h2> Choose Categories for your Recipe </h2>
+        <div class="border border-1 pt-2 p-3 mb-2" style="background-color: rgba(255, 255, 255, 0.9);">
+            <h4>Your Categories</h4>
+            <div class="d-flex flex-nowrap overflow-auto" id="selectedCategoriesContainer"></div>
         </div>
-
-        <div class="mb-3">
-            <label for="recipeDescription" class="form-label">Recipe Description</label>
-            <textarea class="form-control" id="recipeDescription" name="recipeDescription"></textarea>
+        <div id="searchBarContainer" class="d-flex align-items-center">
+            <!-- Aqui a barra de pesquisa será adicionada dinamicamente -->
         </div>
-
-        <div class="mb-3">
-            <label for="recipeInstructions" class="form-label">Recipe Instructions</label>
-            <textarea class="form-control" id="recipeInstructions" name="recipeInstructions" required></textarea>
-        </div>
-
-            <div class="mb-3">
-                <label for="ingredients" class="form-label">Ingredients</label>
-                <div id="ingredientRow" class="row">
-                    <!-- Initial ingredient fields will be added here -->
-                </div>
-                <div class="mb-3">
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Ingredient" id="ingredientName">
-                        </div>
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Quantity" id="ingredientQuantity">
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-primary" onclick="addIngredient()">Add</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="hints" class="form-label">Hints</label>
-                <div id="hintContainer">
-                    <!-- Initial hint field with Add button -->
-                    <div class="hint-group mb-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="hints[]" placeholder="Hint">
-                            <button type="button" class="btn btn-success btn-sm" onclick="addHint(this)">Add</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="notes" class="form-label">Notes</label>
-                <div id="noteContainer">
-                    <!-- Initial note field with Add button -->
-                    <div class="note-group mb-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="notes[]" placeholder="Note">
-                            <button type="button" class="btn btn-success btn-sm" onclick="addNote(this)">Add</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="mb-3">
-                <h4>Upload Recipe Photos</h4>
-
-                <label for="imageInput" class="btn btn-secondary">Add Images</label>
-                <input type="file" id="imageInput" class="form-control-file" style="display: none;" accept="image/*" multiple onchange="handleImageUpload(event)">
-
-                <!-- Preview Area -->
-                <div id="photoPreview" class="mt-3 row">
-                    <!-- Image previews will be added here -->
-                </div>
-
-                <!-- Add More Images Button -->
-                
-
-                <!-- Hidden file input for initial and additional image selection -->
-
-            </div>
-            <button onclick="CreateRecipe()" class="btn btn-primary">Create Recipe</button>
-    </div>
+        <div id="categoryListContainer"></div>
+        <button onclick="AddCategories()" class="btn btn-primary mt-3">Add Categories</button>
     </div>
 </div>
+
+
 
 <footer class="text-white" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-top: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 0 1;">
     <div class="container-fluid">
@@ -190,6 +135,7 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 </footer>
+
 
 <script>
     document.getElementById('recipePhotos').addEventListener('change', handleFileSelect);
