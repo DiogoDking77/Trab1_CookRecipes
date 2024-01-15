@@ -61,6 +61,9 @@ class RecipeController {
             $isFavorited = ($rowCount > 0);
             $recipe['isFavorited'] = $isFavorited;
 
+            $creator = $this->userController->getUserById($recipe[0]['User_ID']);
+            $recipe['creator'] = $creator;
+
             // Retorne a resposta JSON
             header('Content-Type: application/json');
             echo json_encode(['recipe' => $recipe]);
@@ -75,18 +78,42 @@ class RecipeController {
     // Adapte o método getRecipes para incluir as fotos usando o PhotoController
     public function getRecipes() {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM Recipe");
+            $stmt = $this->pdo->query("SELECT * FROM Recipe ORDER BY Creation_Date DESC LIMIT 15");
             $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        
             foreach ($recipes as &$recipe) {
                 $recipeId = $recipe['Recipe_ID'];
                 $photos = $this->photosController->getPhotosByRecipeId($recipeId);
                 $recipe['photos'] = $photos;
-
+        
                 $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
-                $recipe['categories']= $categories;
+                $recipe['categories'] = $categories;
             }
-
+        
+            return $recipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }        
+    }
+    public function getRecipesByUserId($userId) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE User_ID = :userId");
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            foreach ($recipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+    
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+            }
+    
             return $recipes;
         } catch (PDOException $e) {
             header('Content-Type: application/json');
@@ -94,18 +121,7 @@ class RecipeController {
             exit;
         }
     }
-    public function getRecipesByUserId($userId) {
-        try {
-            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE User_ID = :userId");
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
-            exit;
-        }
-    }
+    
     public function getFavoriteRecipesByUserId($user_id) {
         try {
             $stmt = $this->pdo->prepare("SELECT Recipe.* FROM Recipe
@@ -231,21 +247,69 @@ class RecipeController {
         }
     }
     public function ShareRecipe($userId, $friendId, $recipeId) {
-        try{
-            $stmt = $this->pdo->prepare("INSERT INTO Shared_Recipes (Sharing_User_ID, Receiving_User_ID, Recipe_ID) VALUES (:sharing, :receiving, :recipeId)");
-            $stmt->bindParam(':sharing', $userId, PDO::PARAM_STR);
-            $stmt->bindParam(':receiving', $friendId, PDO::PARAM_STR);
-            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
-            $stmt->execute();
-
+        try {
+            // Verificar se o registro já existe
+            $stmtCheck = $this->pdo->prepare("SELECT COUNT(*) FROM Shared_Recipes WHERE Sharing_User_ID = :sharing AND Receiving_User_ID = :receiving AND Recipe_ID = :recipeId");
+            $stmtCheck->bindParam(':sharing', $userId, PDO::PARAM_STR);
+            $stmtCheck->bindParam(':receiving', $friendId, PDO::PARAM_STR);
+            $stmtCheck->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmtCheck->execute();
+    
+            $count = $stmtCheck->fetchColumn();
+    
+            if ($count > 0) {
+                // O registro já existe, não é necessário inserir novamente
+                return true;
+            }
+    
+            // Se o registro não existe, faça a inserção
+            $stmtInsert = $this->pdo->prepare("INSERT INTO Shared_Recipes (Sharing_User_ID, Receiving_User_ID, Recipe_ID) VALUES (:sharing, :receiving, :recipeId)");
+            $stmtInsert->bindParam(':sharing', $userId, PDO::PARAM_STR);
+            $stmtInsert->bindParam(':receiving', $friendId, PDO::PARAM_STR);
+            $stmtInsert->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmtInsert->execute();
+    
             return true;
         } catch (PDOException $e) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
             exit;
         }
-        
     }
+    
+    public function getSharedRecipes($userId){
+        try {
+            $stmt = $this->pdo->prepare("SELECT Recipe.*, Users.User_Email AS Sharing_User_Email
+                FROM Recipe
+                JOIN Shared_Recipes ON Recipe.Recipe_ID = Shared_Recipes.Recipe_ID
+                JOIN Users ON Shared_Recipes.Sharing_User_ID = Users.User_ID
+                WHERE Shared_Recipes.Receiving_User_ID = :user_id");
+    
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            $sharedRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            foreach ($sharedRecipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+    
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+    
+                $user = $this->userController->getUserById($userId);
+                $recipe['user'] = $user;
+            }
+    
+            return $sharedRecipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+    
     
     
 }
@@ -283,6 +347,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 if (isset($_GET['userId'])) {
                     $userId = $_GET['userId'];
                     $recipeDetails = $recipeController->getFavoriteRecipesByUserId($userId);
+                    header('Content-Type: application/json');
+                    echo json_encode(['recipeDetails' => $recipeDetails]);
+                    exit;
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Parâmetros insuficientes para getFavoriteRecipes']);
+                    exit;
+                }
+            case 'getYourRecipes':
+                if (isset($_GET['userId'])) {
+                    $userId = $_GET['userId'];
+                    $recipeDetails = $recipeController->getRecipesByUserId($userId);
+                    header('Content-Type: application/json');
+                    echo json_encode(['recipes' => $recipeDetails]);
+                    exit;
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Parâmetros insuficientes para getFavoriteRecipes']);
+                    exit;
+                }
+            case 'getSharedRecipes':
+                if (isset($_GET['userId'])) {
+                    $userId = $_GET['userId'];
+                    $recipeDetails = $recipeController->getSharedRecipes($userId);
                     header('Content-Type: application/json');
                     echo json_encode(['recipeDetails' => $recipeDetails]);
                     exit;

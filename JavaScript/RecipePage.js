@@ -54,7 +54,7 @@ function displayRecipeDetails(recipe) {
         var urlParams = new URLSearchParams(window.location.search);
         var recipeId = urlParams.get('id');
 
-        buttonsHtml += '<button class="btn btn-outline-success" onclick="editarReceita(' + recipeId+ ',' + userIdFromPHP + ')">Editar</button>';
+        buttonsHtml += '<button class="btn btn-outline-success" onclick="editarReceita(' + recipeId+ ',' + userIdFromPHP + ')">Edit</button>';
     }
     
     
@@ -71,7 +71,7 @@ function displayRecipeDetails(recipe) {
                                  ${('0' + creationDate.getDate()).slice(-2)}/
                                  ${creationDate.getFullYear()}`;
 
-    var ingredientsTable = '<h5>Ingredientes</h5><table class="table" ><thead><tr><th>Nome</th><th>Quantidade</th></tr></thead><tbody>';
+    var ingredientsTable = '<h5>Ingredientes</h5><table class="table" ><thead><tr><th>Name</th><th>Quantity</th></tr></thead><tbody>';
     ingredientsTable += recipe.ingredients.map(ingredient => `<tr><td>${ingredient.Ingredients_Name}</td><td>${ingredient.Ingredients_Quantity}</td></tr>`).join('');
     ingredientsTable += '</tbody></table>';
 
@@ -146,13 +146,13 @@ console.log(categoryTags)
         <div class="col-md-6 d-flex align-items-center">
             <div class="card" style="background: rgba(176, 226, 255, 0.8);">
                 <div class="card-body">
-                    <h5 class="card-title" style="color: #808080;">Dicas</h5>
+                    <h5 class="card-title" style="color: #808080;">Notes</h5>
                     ${recipe.notes.map(note => `<p style="margin-bottom: 5px;">${note.Notes}</p>`).join('<hr>')}
                 </div>
             </div>
         </div>
-        <div class="col-12">
-            <p>Data de Criação: ${formattedCreationDate}</p>
+        <div class="col-md-6">
+            <p>Creation Date: ${formattedCreationDate} || Creator: ${recipe.creator.User_Email}</p>
         </div>
     </div>
 `;
@@ -296,17 +296,24 @@ function displayUsersList(users) {
     var sharePopup = document.querySelector('.share-popup');
 
     var searchBarHtml = `
+        <div class="d-flex justify-content-between p-2 rounded text-white">
+            <div>
+                <p>Share with Friends this Recipe</p>
+            </div>
+            <div>
+                <button type="button" class="btn-close btn-close-white " aria-label="Fechar" onclick="closeSharePopup()"></button>
+            </div>
+        </div>
         <input class="form-control me-2 mb-3" type="search" id="userSearchInput" placeholder="Search Users" aria-label="Search" oninput="updateSearchResults()">
+        <div id="userSearchResults"></div>
+        <button class="btn btn-primary" onclick="shareRecipe()">Share</button>
     `;
 
-    sharePopup.innerHTML += searchBarHtml;
-
-    var resultsContainer = document.createElement('div');
-    resultsContainer.id = 'userSearchResults';
-    sharePopup.appendChild(resultsContainer);
+    sharePopup.innerHTML = searchBarHtml;
 
     updateSearchResults();
 }
+
 
 function updateSearchResults() {
     var resultsContainer = document.getElementById('userSearchResults');

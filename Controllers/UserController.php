@@ -10,20 +10,22 @@ class UserController {
     }
 
     public function getUserById($userId) {
-        $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE User_ID = :userId");
+        $stmt = $this->pdo->prepare("SELECT User_ID, User_Name, User_Email FROM Users WHERE User_ID = :userId");
         $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
 
     public function getAllUsers() {
-        $stmt = $this->pdo->query("SELECT * FROM Users");
+        $stmt = $this->pdo->query("SELECT User_ID, User_Name, User_Email FROM Users");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
     public function getUsers($userId) {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE user_id != :userId");
+            $stmt = $this->pdo->prepare("SELECT User_ID, User_Name, User_Email FROM Users WHERE User_ID != :userId");
             $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -33,6 +35,7 @@ class UserController {
             exit;
         }
     }
+    
     
 
     public function addUser($username, $email, $password) {

@@ -1,5 +1,4 @@
 <?php
-
 require_once '../../Controllers/UserController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,13 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($existingUser) {
             $error_message = "Email already in use. Please choose a different email.";
         } else {
-            // Adiciona o usuário
-            $userRepo->addUser($username, $email, $password);
-            echo "Registration successful! You can now log in.";
+            $success_message = "User successfully registered!";
+            $success = $userRepo->addUser($username, $email, $password);
         }
     }
 }
-
 ?>
 
 
@@ -86,9 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="submit" class="btn btn-block btn-lg gradient-custom-4 text-body">Register</button>
                         </div>
 
-                        <?php if (isset($error_message)) : ?>
-                            <div class="alert alert-danger mt-3" role="alert">
-                                <?php echo $error_message; ?>
+                        <?php if (isset($error_message) || isset($success_message)) : ?>
+                            <div class="alert mt-3 <?php echo isset($error_message) ? 'alert-danger' : 'alert-success'; ?>" role="alert">
+                                <?php echo isset($error_message) ? $error_message : $success_message; ?>
                             </div>
                         <?php endif; ?>
 

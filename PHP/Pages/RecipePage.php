@@ -52,7 +52,7 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
@@ -73,7 +73,7 @@ if (isset($_GET['id'])) {
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#">New Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Your Recipes</a></li>
+                            <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
                             <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
                             <li><a class="dropdown-item" href="#">Shared Recipes</a></li>
                         </ul>
@@ -83,6 +83,9 @@ if (isset($_GET['id'])) {
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="login.php">Logout</a>
                     </li>
                 </ul>
                 <form class="d-flex">
@@ -131,6 +134,7 @@ if (isset($_GET['id'])) {
             </div>
         </div>
     </footer>
+
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

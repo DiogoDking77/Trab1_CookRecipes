@@ -19,12 +19,12 @@ if (isset($_GET['logout'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../../CSS/dashboard.css">
+    <link rel="stylesheet" href="../../CSS/yourRecipes.css">
     <script>
         var userIdFromPHP = <?php echo json_encode($user_id); ?>;
         console.log("User ID from PHP: " + userIdFromPHP);
     </script>
-    <script src="../../JavaScript/dashboard.js"> </script>   
+    <script src="../../JavaScript/yourRecipes.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -43,7 +43,7 @@ if (isset($_GET['logout'])) {
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
@@ -91,26 +91,14 @@ if (isset($_GET['logout'])) {
     
         
         <!-- Adicione uma lista com um ID específico para exibir as receitas -->
-        <h2 class="divider line double-razor">New Recipes</h2>
+        <h2 class="divider line double-razor">Your Recipes</h2>
         <div class="container-fluid mt-2 recipes-container">
-            <div class="d-flex flex-nowrap overflow-auto" id="recipesList">
+            <div class="row" id="recipesList">
                 <!-- Cards serão adicionadas aqui -->
             </div>
         </div>
 
-        <h2 class="divider line double-razor">Shared Recipes</h2>
-        <div class="container-fluid mt-2 shared-container">
-            <div class="d-flex flex-nowrap overflow-auto" id="SharedList">
-                <!-- Cards serão adicionadas aqui -->
-            </div>
-        </div>
-
-        <h2 class="divider line double-razor">Your Favorited Recipes</h2>
-        <div class="container-fluid mt-2 favorite-container">
-            <div class="d-flex flex-nowrap overflow-auto" id="FavoriteList">
-                <!-- Cards serão adicionadas aqui -->
-            </div>
-        </div>
+        
 
 
 
