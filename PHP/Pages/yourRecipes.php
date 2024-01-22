@@ -66,7 +66,7 @@ if (isset($_GET['logout'])) {
                             <li><a class="dropdown-item" href="#">New Recipes</a></li>
                             <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
                             <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Shared Recipes</a></li>
+                            <li><a class="dropdown-item" href="SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -93,7 +93,7 @@ if (isset($_GET['logout'])) {
         <!-- Adicione uma lista com um ID específico para exibir as receitas -->
         <h2 class="divider line double-razor">Your Recipes</h2>
         <div class="container-fluid mt-2 recipes-container">
-            <div class="row" id="recipesList">
+            <div class="row justify-content-center" id="recipesList">
                 <!-- Cards serão adicionadas aqui -->
             </div>
         </div>

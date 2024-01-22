@@ -1,8 +1,5 @@
 <?php
-// Inicie a sessão (se ainda não estiver iniciada)
 session_start();
-
-// Verifique se o 'user_id' está definido na sessão
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 } else {
@@ -11,29 +8,23 @@ if (isset($_SESSION['user_id'])) {
     exit(); // Certifique-se de encerrar o script após redirecionar
 }
 
-// Verifique se o ID da receita foi passado como parâmetro na URL
-if (isset($_GET['id'])) {
-    $recipeId = $_GET['id'];
-
-
-    // Restante do seu código...
-} else {
-    // Se o ID da receita não foi fornecido, você pode redirecionar o usuário ou mostrar uma mensagem de erro
-    echo "ID da receita não fornecido.";
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: login.php');
+    exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../CSS/SharedRecipes.css">
     <script>
         var userIdFromPHP = <?php echo json_encode($user_id); ?>;
         console.log("User ID from PHP: " + userIdFromPHP);
     </script>
-    <script src="../../JavaScript/RecipePage.js"> </script> 
-    <link rel="stylesheet" href="../../CSS/RecipePage.css">  
+    <script src="../../JavaScript/SharedRecipes.js"> </script>   
     <title>Gestão de Receitas Culinárias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -52,7 +43,7 @@ if (isset($_GET['id'])) {
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
@@ -97,18 +88,28 @@ if (isset($_GET['id'])) {
     </nav>
 
     <main>
-    <div class="container mt-5 mb-5">
-        <div class="card bg-style p-3">
-        <div id="recipe-details">
-            <!-- Os detalhes da receita serão adicionados aqui -->
+    
+        
+        <!-- Adicione uma lista com um ID específico para exibir as receitas -->
+        <h2 class="divider line double-razor">Shared with you</h2>
+        <div class="container-fluid mt-2 recipes-container">
+            <div class="row justify-content-center" id="sharedRecipesList">
+                <!-- Cards serão adicionadas aqui -->
+            </div>
         </div>
 
-        <div id="photo-gallery">
+        
 
-            <!-- A galeria de fotos será adicionada aqui -->
-        </div>
-        </div>
-    </div>
+
+
+
+
+
+        <!-- Seu restante de conteúdo existente... -->
+
+        <!-- Adicione um script para lidar com a solicitação de receitas ao clicar no link -->
+        
+        
     </main>
 
     <footer class="text-white" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-top: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 0 1;">
@@ -134,7 +135,6 @@ if (isset($_GET['id'])) {
             </div>
         </div>
     </footer>
-
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

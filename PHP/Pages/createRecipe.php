@@ -61,7 +61,7 @@ if (isset($_SESSION['user_id'])) {
                             <li><a class="dropdown-item" href="#">New Recipes</a></li>
                             <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
                             <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Shared Recipes</a></li>
+                            <li><a class="dropdown-item" href="SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

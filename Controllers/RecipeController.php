@@ -25,14 +25,14 @@ class RecipeController {
         $this->categoryController = new CategoryController();
     }
     public function getRecipeById($recipeId) {
-        $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE Recipe_ID = :recipeId");
+        $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' AND Recipe_ID = :recipeId");
         $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public function getRecipesById($recipeId,$userLoggedIn) {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE Recipe_ID = :recipeId");
+            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' AND Recipe_ID = :recipeId");
             $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
             $stmt->execute();
             $recipe = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -74,11 +74,10 @@ class RecipeController {
             exit;
         }
     }
-    // Modifique o método getRecipes na sua classe RecipeController
-    // Adapte o método getRecipes para incluir as fotos usando o PhotoController
+
     public function getRecipes() {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM Recipe ORDER BY Creation_Date DESC LIMIT 15");
+            $stmt = $this->pdo->query("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' ORDER BY Creation_Date DESC LIMIT 15");
             $recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
             foreach ($recipes as &$recipe) {
@@ -99,7 +98,7 @@ class RecipeController {
     }
     public function getRecipesByUserId($userId) {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE User_ID = :userId");
+            $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' AND User_ID = :userId");
             $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
     
@@ -126,7 +125,7 @@ class RecipeController {
         try {
             $stmt = $this->pdo->prepare("SELECT Recipe.* FROM Recipe
                 JOIN Favorites ON Recipe.Recipe_ID = Favorites.Recipe_ID
-                WHERE Favorites.User_ID = :user_id");
+                WHERE Favorites.User_ID = :user_id AND TRIM(Recipe_Name) <> ''");
     
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
             $stmt->execute();
@@ -279,11 +278,11 @@ class RecipeController {
     
     public function getSharedRecipes($userId){
         try {
-            $stmt = $this->pdo->prepare("SELECT Recipe.*, Users.User_Email AS Sharing_User_Email
+            $stmt = $this->pdo->prepare("SELECT Recipe.*, Users.User_Email AS User_Email
                 FROM Recipe
                 JOIN Shared_Recipes ON Recipe.Recipe_ID = Shared_Recipes.Recipe_ID
                 JOIN Users ON Shared_Recipes.Sharing_User_ID = Users.User_ID
-                WHERE Shared_Recipes.Receiving_User_ID = :user_id");
+                WHERE Shared_Recipes.Receiving_User_ID = :user_id AND TRIM(Recipe.Recipe_Name) <> ''");
     
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
             $stmt->execute();
@@ -298,8 +297,7 @@ class RecipeController {
                 $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
                 $recipe['categories'] = $categories;
     
-                $user = $this->userController->getUserById($userId);
-                $recipe['user'] = $user;
+                
             }
     
             return $sharedRecipes;
@@ -311,6 +309,109 @@ class RecipeController {
     }
     
     
+    
+    public function deleteRecipe($recipeId) {
+        try {
+            // Atualiza o nome da receita para null
+            $stmt = $this->pdo->prepare("UPDATE Recipe SET Recipe_Name = NULL WHERE Recipe_ID = :recipeId");
+            $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Retorna true para indicar sucesso
+            return true;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function getTopSharedRecipes() {
+        try {
+            $stmt = $this->pdo->query("SELECT Recipe.*, COUNT(Shared_Recipes.Recipe_ID) AS ShareCount
+                FROM Recipe
+                LEFT JOIN Shared_Recipes ON Recipe.Recipe_ID = Shared_Recipes.Recipe_ID
+                WHERE TRIM(Recipe.Recipe_Name) <> ''
+                GROUP BY Recipe.Recipe_ID
+                ORDER BY ShareCount DESC
+                LIMIT 15");
+
+            $topSharedRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($topSharedRecipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+            }
+
+            return $topSharedRecipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function getTopFavoriteRecipes() {
+        try {
+            $stmt = $this->pdo->query("SELECT Recipe.*, COUNT(Favorites.Recipe_ID) AS FavoriteCount
+                FROM Recipe
+                LEFT JOIN Favorites ON Recipe.Recipe_ID = Favorites.Recipe_ID
+                WHERE TRIM(Recipe.Recipe_Name) <> ''
+                GROUP BY Recipe.Recipe_ID
+                ORDER BY FavoriteCount DESC
+                LIMIT 15");
+
+            $topFavoriteRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($topFavoriteRecipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+            }
+
+            return $topFavoriteRecipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function searchRecipes($searchParam) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM Recipe
+                WHERE (Recipe_Name LIKE :searchParam OR Recipe_Description LIKE :searchParam)
+                AND TRIM(Recipe_Name) <> ''");
+
+            $searchParam = '%' . $searchParam . '%';
+            $stmt->bindParam(':searchParam', $searchParam, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $searchedRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($searchedRecipes as &$recipe) {
+                $recipeId = $recipe['Recipe_ID'];
+                $photos = $this->photosController->getPhotosByRecipeId($recipeId);
+                $recipe['photos'] = $photos;
+
+                $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
+                $recipe['categories'] = $categories;
+            }
+
+            return $searchedRecipes;
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
     
 }
 $recipeController = new RecipeController();
@@ -393,6 +494,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 } else {
                     header('Content-Type: application/json');
                     echo json_encode(['error' => 'Parâmetros insuficientes para getFavoriteRecipes']);
+                    exit;
+                }
+            case 'getTopSharedRecipes':
+                $topSharedRecipes = $recipeController->getTopSharedRecipes();
+                header('Content-Type: application/json');
+                echo json_encode(['recipeDetails' => $topSharedRecipes]);
+                exit;
+
+            case 'getTopFavoriteRecipes':
+                $topFavoriteRecipes = $recipeController->getTopFavoriteRecipes();
+                header('Content-Type: application/json');
+                echo json_encode(['topFavoriteRecipes' => $topFavoriteRecipes]);
+                exit;
+
+            case 'searchRecipes':
+                if (isset($_GET['searchParam'])) {
+                    $searchParam = $_GET['searchParam'];
+                    $searchedRecipes = $recipeController->searchRecipes($searchParam);
+                    header('Content-Type: application/json');
+                    echo json_encode(['searchedRecipes' => $searchedRecipes]);
+                    exit;
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Parâmetros insuficientes para searchRecipes']);
                     exit;
                 }
             default:
@@ -524,6 +649,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 exit;
             }
             break;
+            case 'DeleteRecipe':
+                if (isset($_POST['recipeId'], $_POST['userPassword'], $_POST['userId'])) {
+                    // Verificar a senha
+                    $isPassword = $usersController->verifyPassword($_POST['userPassword'], $_POST['userId']);
+            
+                    if ($isPassword) {
+                        // Executar a função que define o nome da receita para null
+                        $result = $recipeController->deleteRecipe($_POST['recipeId']);
+            
+                        if ($result) {
+                            // Sucesso, incluir a URL de redirecionamento
+                            $response = [
+                                'success' => true,
+                                'redirect' => 'dashboard.php'
+                            ];
+            
+                            // Envie a resposta como JSON
+                            header('Content-Type: application/json');
+                            echo json_encode($response);
+                            exit;
+                        } else {
+                            // Ocorreu um erro na exclusão
+                            header('Content-Type: application/json');
+                            echo json_encode(['error' => 'Error deleting recipe']);
+                            exit;
+                        }
+                    } else {
+                        // Senha incorreta, envie uma resposta de erro
+                        header('Content-Type: application/json');
+                        echo json_encode(['error' => 'Incorrect password']);
+                        exit;
+                    }
+                } else {
+                    // Se faltar algum parâmetro, envie uma resposta de erro
+                    header('Content-Type: application/json');
+                    echo json_encode(['error' => 'Invalid request or missing parameters']);
+                    exit;
+                }
+                break;            
         case 'ShareRecipe':
             if (isset($_POST['userId'],$_POST['friendId'],$_POST['recipeId'])) {
                 $result = $recipeController->ShareRecipe($_POST['userId'],$_POST['friendId'],$_POST['recipeId']);

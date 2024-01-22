@@ -64,6 +64,24 @@ class UserController {
           
         return $user;
     }
+
+    public function verifyPassword($userPassword, $userId) {
+        try {
+            // Obter a senha armazenada no banco de dados para o usuário
+            $stmt = $this->pdo->prepare("SELECT User_Password FROM Users WHERE User_ID = :userId");
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            $storedPassword = $stmt->fetchColumn();
+
+            // Comparar senhas diretamente (sem criptografia)
+            return ($userPassword === $storedPassword);
+        } catch (PDOException $e) {
+            // Tratar erros de banco de dados (pode ser apropriado logar ou enviar uma resposta de erro, dependendo da aplicação)
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+            exit;
+        }
+    }
     
 }
 

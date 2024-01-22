@@ -40,29 +40,37 @@ function editarReceita(recipeId, userId) {
 
 function displayRecipeDetails(recipe) {
 
-// Adiciona os botões condicionalmente
-    var buttonsHtml = '';
+    var buttonsHtml = '<div class="d-flex justify-content-end">';
+
     if (recipe.isFavorited) {
         // Se for true, definir a classe do ícone como "fas fa-heart"
-        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100  text-danger favorite" onclick="toggleFavorite(this)"><i class="fas fa-heart"></i></button>';
+        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger favorite" onclick="toggleFavorite(this)"><i class="fas fa-heart"></i></button>';
     } else {
         // Se for false, definir a classe do ícone como "far fa-heart"
-        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100  text-danger" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></button>';
+        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></button>';
     }
-    buttonsHtml += '<button class="btn btn-outline-light border-0" onclick="ShareRecipe()"><i class="fas fa-share text-primary"></i></button>';    
+
+    buttonsHtml += '<button class="btn btn-outline-light border-0" onclick="ShareRecipe()"><i class="fas fa-share text-primary"></i></button>';
+
     if (userIdFromPHP && userIdFromPHP === recipe[0].User_ID) {
         var urlParams = new URLSearchParams(window.location.search);
         var recipeId = urlParams.get('id');
 
-        buttonsHtml += '<button class="btn btn-outline-success" onclick="editarReceita(' + recipeId+ ',' + userIdFromPHP + ')">Edit</button>';
+        buttonsHtml += '<div class="dropdown ml-2">';
+        buttonsHtml += '<button class="btn border-0 text-black" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleEditDeleteButtons()" style="background-color: rgba(255, 255, 255, 0.5);">';
+        buttonsHtml += '<i class="fas fa-cogs text-black"></i>';
+        buttonsHtml += '</button>';
+        buttonsHtml += '<div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton" id="editDeleteButtons" style="left: auto; right: 0;">';
+        buttonsHtml += '<button class="btn btn-outline-success dropdown-item" onclick="editarReceita(' + recipeId + ',' + userIdFromPHP + ')">Edit</button>';
+        buttonsHtml += '<button class="btn btn-outline-danger dropdown-item" onclick="deleteRecipe(' + recipeId + ')" style="color: red;">Delete</button>';
+        buttonsHtml += '</div>';
+        buttonsHtml += '</div>';
     }
-    
-    
-    
+
+    buttonsHtml += '</div>';
+
 
     
-
-    // Detalhes da receita
     var instructions = recipe[0].Recipe_Instructions.replace(/\n/g, '<br>'); // Substitui \n por <br>
 
     // Formatação da Data de Criação
@@ -414,11 +422,91 @@ function shareRecipe() {
     closeSharePopup();
 }
 
+function deleteRecipe(recipeId) {
+    // Criar o elemento do popup de senha
+    var passwordPopup = document.createElement('div');
+    passwordPopup.classList.add('share-popup', 'position-fixed', 'top-50', 'start-50', 'translate-middle', 'p-4', 'shadow-lg');
+    passwordPopup.innerHTML = `
+        <div class="d-flex justify-content-between p-2 rounded text-white">
+            <div>
+                <p>Enter your password to delete this recipe</p>
+            </div>
+            <div>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="closePasswordPopup()"></button>
+            </div>
+        </div>
+        <input type="password" id="passwordInput" class="form-control mb-3" placeholder="Your Password">
+        <div id="errorContainer" class="alert alert-danger mb-2 d-none" role="alert"></div>
+        <button class="btn btn-danger" onclick="confirmDeleteRecipe(${recipeId})">Delete Recipe</button>
+    `;
 
+    // Adicionar o elemento ao corpo do documento
+    document.body.appendChild(passwordPopup);
+}
 
+function confirmDeleteRecipe(recipeId) {
+    // Obter a senha do input
+    var userPassword = document.getElementById('passwordInput').value;
 
+    // Verificar se a senha é válida e prosseguir com a exclusão
+    if (userPassword.trim() !== "") {
+        $.ajax({
+            url: '../../Controllers/RecipeController.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'DeleteRecipe',
+                recipeId: recipeId,
+                userPassword: userPassword,
+                userId: userIdFromPHP
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Handle success
+                    if (response.redirect) {
+                        // Redirecionar para a página especificada
+                        window.location.href = response.redirect;
+                    } else {
+                        console.log('Recipe deleted successfully');
+                    }
+                    // Fechar o popup apenas em caso de sucesso
+                    closePasswordPopup();
+                } else {
+                    // Exibir mensagem de erro
+                    displayErrorMessage(response.error || 'Something went wrong, please check your password');
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error deleting recipe:', error);
+                // Exibir mensagem de erro
+                displayErrorMessage('Something went wrong, please try again');
+            }
+        });
+    }
+}
 
+function closePasswordPopup() {
+    // Remover o popup de senha
+    var passwordPopup = document.querySelector('.share-popup');
+    if (passwordPopup) {
+        passwordPopup.parentNode.removeChild(passwordPopup);
+    }
+}
 
+function displayErrorMessage(message) {
+    // Exibir mensagem de erro dentro da área de erro
+    var errorContainer = document.getElementById('errorContainer');
+    if (errorContainer) {
+        errorContainer.textContent = message;
+        // Mostrar o card de erro
+        errorContainer.classList.remove('d-none');
+    }
+}
 
-
-
+function toggleEditDeleteButtons() {
+    var editDeleteButtons = document.getElementById('editDeleteButtons');
+    if (editDeleteButtons) {
+        editDeleteButtons.classList.toggle('show');
+    }
+}

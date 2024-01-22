@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     categoryContainer.append(categoryTags);
                 
                     // Adicionar o card completo (sem a descrição)
-                    var card = $('<div>').addClass('card p-2 mb-4 mx-1 shadow').css({'width': '30vw', 'min-width': '30vw', 'height': '40vh', 'background-color': '#f2f2f2'})
+                    var card = $('<div>').addClass('card p-2 mb-1 mx-1 shadow').css({'width': '30vw', 'min-width': '30vw', 'height': '40vh', 'background-color': '#f2f2f2'})
                     .append(imgElement, cardTitle, categoryContainer);
                 
                     // Adicionar a descrição ao card (após os outros elementos)
@@ -252,8 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
         method: 'GET',
         dataType: 'json',
         data: {
-            action: 'getSharedRecipes', // Adicione a ação aqui
-            userId: userIdFromPHP // Substitua 1 pelo valor real do ID do usuário
+            action: 'getTopSharedRecipes', // Adicione a ação aqui
         },
         success: function(response) {
             // Limpar a lista de receitas
@@ -338,16 +337,16 @@ document.addEventListener("DOMContentLoaded", function() {
                     categoryContainer.append(categoryTags);
                 
                     // Adicionar o card completo (sem a descrição)
-                    var card = $('<div>').addClass('card p-2 mb-4 mx-1 shadow').css({'width': '30vw', 'min-width': '30vw', 'height': '40vh', 'background-color': '#f2f2f2'})
+                    var card = $('<div>').addClass('card p-2 mb-1 mx-1 shadow').css({'width': '30vw', 'min-width': '30vw', 'height': '40vh', 'background-color': '#f2f2f2'})
                     .append(imgElement, cardTitle, categoryContainer);
                 
                     // Adicionar a descrição ao card (após os outros elementos)
-                    var cardDescription = $('<p>').addClass('card-text').html('Sender: <span class="text-muted">' + recipe.user.User_Email + '</span><br>' + recipe.Recipe_Description)
-                    .css({
-                        'overflow': 'hidden',
-                        'text-overflow': 'ellipsis',
-                        'height' : '40%'
-                    });
+                    var cardDescription = $('<p>').addClass('card-text').text(recipe.Recipe_Description)
+                        .css({
+                            'overflow': 'hidden',
+                            'text-overflow': 'ellipsis',
+                            'height' : '40%'
+                        });
                 
                     card.append(cardDescription);
 

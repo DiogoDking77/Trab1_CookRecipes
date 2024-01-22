@@ -66,7 +66,7 @@ if (isset($_GET['logout'])) {
                             <li><a class="dropdown-item" href="#">New Recipes</a></li>
                             <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
                             <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Shared Recipes</a></li>
+                            <li><a class="dropdown-item" href="SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -92,21 +92,21 @@ if (isset($_GET['logout'])) {
         
         <!-- Adicione uma lista com um ID específico para exibir as receitas -->
         <h2 class="divider line double-razor">New Recipes</h2>
-        <div class="container-fluid mt-2 recipes-container">
+        <div class="container-fluid mt-2 mb-2 recipes-container">
             <div class="d-flex flex-nowrap overflow-auto" id="recipesList">
                 <!-- Cards serão adicionadas aqui -->
             </div>
         </div>
 
-        <h2 class="divider line double-razor">Shared Recipes</h2>
-        <div class="container-fluid mt-2 shared-container">
+        <h2 class="divider line double-razor mt-2">Most Shared Recipes</h2>
+        <div class="container-fluid mt-2 mb-4 shared-container">
             <div class="d-flex flex-nowrap overflow-auto" id="SharedList">
                 <!-- Cards serão adicionadas aqui -->
             </div>
         </div>
 
-        <h2 class="divider line double-razor">Your Favorited Recipes</h2>
-        <div class="container-fluid mt-2 favorite-container">
+        <h2 class="divider line double-razor mt-2">Your Favorited Recipes</h2>
+        <div class="container-fluid mt-2 mb-4 favorite-container">
             <div class="d-flex flex-nowrap overflow-auto" id="FavoriteList">
                 <!-- Cards serão adicionadas aqui -->
             </div>
