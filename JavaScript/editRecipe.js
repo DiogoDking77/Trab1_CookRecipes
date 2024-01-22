@@ -448,11 +448,22 @@ function removeImage(element) {
 }
 
 function editRecipe() {
-    
     var recipeName = document.getElementById("recipeName").value;
     var recipeDescription = document.getElementById("recipeDescription").value;
     var recipeInstructions = document.getElementById("recipeInstructions").value;
-    
+
+    // Verificar se há pelo menos um ingrediente
+    if (ingredientsArray.length === 0) {
+        displayErrorMessage('A receita deve ter pelo menos um ingrediente.');
+        return;
+    }
+
+    // Verificar se há um nome, descrição e instruções
+    if (!recipeName || !recipeDescription || !recipeInstructions) {
+        displayErrorMessage('Certifique-se de preencher todos os campos obrigatórios: nome, descrição e instruções.');
+        return;
+    }
+
     var urlParams = new URLSearchParams(window.location.search);
     var recipeId = urlParams.get('recipeId');
 
@@ -462,7 +473,7 @@ function editRecipe() {
         dataType: 'json',
         data: {
             action: 'editRecipe',
-            recipeId : recipeId,
+            recipeId: recipeId,
             recipeName: recipeName,
             description: recipeDescription,
             instructions: recipeInstructions,
@@ -472,17 +483,23 @@ function editRecipe() {
             userId: userIdFromPHP,
         },
         success: function(response) {
-            console.log('Ação enviada do lado do cliente:', 'addPhoto');
+            console.log('Ação enviada do lado do cliente:', 'editRecipe');
             console.log('Imagens:', imageArray);
-            DeleteImages()
+            DeleteImages();
         },
         error: function(xhr, status, error) {
-            console.error('Erro ao criar a receita:', error);
+            console.error('Erro ao editar a receita:', error);
+            displayErrorMessage('Erro ao editar a receita. Por favor, tente novamente.');
         }
     });
-
-    
 }
+
+function displayErrorMessage(message) {
+    var errorMessagesElement = document.getElementById("errorMessages");
+    errorMessagesElement.textContent = message;
+    errorMessagesElement.style.display = "block";
+}
+
 
 function DeleteImages() {
     console.log('Função InsertImages chamada com recipeId:', recipeId);
@@ -561,3 +578,10 @@ function InsertImages() {
     });
 }
 
+function redirectSearch() {
+    var searchTerm = document.getElementById("searchInput").value;
+    if (searchTerm.trim() !== "") {
+        window.location.href = '../../PHP/Pages/SearchRecipes.php?search=' + searchTerm;
+    }
+    return false;  // Prevents the form from submitting via traditional means
+}

@@ -58,9 +58,8 @@ if (isset($_SESSION['user_id'])) {
                             Recipes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">New Recipes</a></li>
                             <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
+                            <li><a class="dropdown-item" href="FavoritedRecipes.php">Favorite Recipes</a></li>
                             <li><a class="dropdown-item" href="SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
@@ -74,10 +73,10 @@ if (isset($_SESSION['user_id'])) {
                         <a class="nav-link text-white" href="login.php">Logout</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
+                <div class="d-flex">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-light" onclick="redirectSearch()" type="submit">Search</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -166,6 +165,8 @@ if (isset($_SESSION['user_id'])) {
 
             </div>
             <button onclick="CreateRecipe()" class="btn btn-primary">Create Recipe</button>
+            <div id="errorMessages" class="alert alert-danger" style="display: none;"></div>
+
     </div>
     </div>
 </div>

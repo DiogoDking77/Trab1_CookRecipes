@@ -5,7 +5,7 @@ $.ajax({
     method: 'GET',
     dataType: 'json',
     data: {
-        action: 'getSharedRecipes',
+        action: 'getFavoriteRecipes',
         userId: userIdFromPHP,
     },
     success: function(response) {
@@ -91,12 +91,12 @@ $.ajax({
                     .append(imgElement, cardTitle, categoryContainer);
             
                 // Adicionar a descrição da receita compartilhada ao card (após os outros elementos)
-                var cardDescription = $('<p>').addClass('card-text').html('Sender: <span class="text-muted">' + recipe.User_Email + '</span><br>' + recipe.Recipe_Description)
-                    .css({
-                        'overflow': 'hidden',
-                        'text-overflow': 'ellipsis',
-                        'height' : '40%'
-                    });
+                var cardDescription = $('<p>').addClass('card-text').text(recipe.Recipe_Description)
+                        .css({
+                            'overflow': 'hidden',
+                            'text-overflow': 'ellipsis',
+                            'height' : '40%'
+                        });
             
                 card.append(cardDescription);
 

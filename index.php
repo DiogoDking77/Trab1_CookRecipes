@@ -13,11 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Pixelify+Sans&family=Raleway:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
+    
 <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
-                <img src="Images/logo2.png" alt="Logo" height="50" style="max-height: 60px;">
+                <img src="../../Images/logo2.png" alt="Logo" height="50" style="max-height: 60px;">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,17 +27,16 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="PHP/Pages/dashboard.php">Home</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Recipes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">New Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Your Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Shared Recipes</a></li>
+                            <li><a class="dropdown-item" href="PHP/Pages/yourRecipes.php">Your Recipes</a></li>
+                            <li><a class="dropdown-item" href="PHP/Pages/FavoritedRecipes.php">Favorite Recipes</a></li>
+                            <li><a class="dropdown-item" href="PHP/Pages/SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -46,10 +46,10 @@
                         <a class="nav-link text-white" href="#">Categories</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
+                <div class="d-flex">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-light" onclick="redirectSearch()" type="submit">Search</button>
+                </div>
             </div>
         </div>
     </nav>

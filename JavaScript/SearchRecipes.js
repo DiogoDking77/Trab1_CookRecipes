@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var searchParam = urlParams.get('search');
 // Fazer uma solicitação AJAX para Receitas Compartilhadas
 $.ajax({
     url: '../../Controllers/RecipeController.php',
     method: 'GET',
     dataType: 'json',
     data: {
-        action: 'getSharedRecipes',
-        userId: userIdFromPHP,
+        action: 'searchRecipes',
+        searchParam: searchParam,
     },
     success: function(response) {
         
@@ -91,12 +93,12 @@ $.ajax({
                     .append(imgElement, cardTitle, categoryContainer);
             
                 // Adicionar a descrição da receita compartilhada ao card (após os outros elementos)
-                var cardDescription = $('<p>').addClass('card-text').html('Sender: <span class="text-muted">' + recipe.User_Email + '</span><br>' + recipe.Recipe_Description)
-                    .css({
-                        'overflow': 'hidden',
-                        'text-overflow': 'ellipsis',
-                        'height' : '40%'
-                    });
+                var cardDescription = $('<p>').addClass('card-text').text(recipe.Recipe_Description)
+                        .css({
+                            'overflow': 'hidden',
+                            'text-overflow': 'ellipsis',
+                            'height' : '40%'
+                        });
             
                 card.append(cardDescription);
 

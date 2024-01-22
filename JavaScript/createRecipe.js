@@ -229,10 +229,22 @@ function removeImage(element) {
 // Function to add more image input fields
 
 function CreateRecipe() {
-    console.log(imageArray)
+    console.log(imageArray);
     var recipeName = document.getElementById("recipeName").value;
     var recipeDescription = document.getElementById("recipeDescription").value;
     var recipeInstructions = document.getElementById("recipeInstructions").value;
+
+    // Verificar se há pelo menos um ingrediente
+    if (ingredientsArray.length === 0) {
+        displayErrorMessage('The recipe must have at least one ingredient.');
+        return;
+    }
+
+    // Verificar se há um nome, descrição e instruções
+    if (!recipeName || !recipeDescription || !recipeInstructions) {
+        displayErrorMessage('Make sure to fill in all required fields: name, description and instructions.');
+        return;
+    }
 
     $.ajax({
         url: '../../Controllers/RecipeController.php',
@@ -249,18 +261,24 @@ function CreateRecipe() {
             userId: userIdFromPHP,
         },
         success: function(response) {
-            console.log('Ação enviada do lado do cliente:', 'addPhoto');
+            console.log('Ação enviada do lado do cliente:', 'addRecipe');
             console.log('recipeId:', response.recipeId);
             console.log('Imagens:', imageArray);
-            InsertImages(response.recipeId)
+            InsertImages(response.recipeId);
         },
         error: function(xhr, status, error) {
             console.error('Erro ao criar a receita:', error);
+            displayErrorMessage('Erro ao criar a receita. Por favor, tente novamente.');
         }
     });
-
-    
 }
+
+function displayErrorMessage(message) {
+    var errorMessagesElement = document.getElementById("errorMessages");
+    errorMessagesElement.textContent = message;
+    errorMessagesElement.style.display = "block";
+}
+
 
 function InsertImages(recipeId) {
     console.log('Função InsertImages chamada com recipeId:', recipeId);
@@ -308,7 +326,13 @@ function InsertImages(recipeId) {
     });
 }
 
-
+function redirectSearch() {
+    var searchTerm = document.getElementById("searchInput").value;
+    if (searchTerm.trim() !== "") {
+        window.location.href = '../../PHP/Pages/SearchRecipes.php?search=' + searchTerm;
+    }
+    return false;  // Prevents the form from submitting via traditional means
+}
 
 
 

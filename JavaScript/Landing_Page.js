@@ -39,3 +39,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
   
+  function redirectSearch() {
+    var searchTerm = document.getElementById("searchInput").value;
+    if (searchTerm.trim() !== "") {
+        window.location.href = '../../PHP/Pages/SearchRecipes.php?search=' + searchTerm;
+    }
+    return false;  // Prevents the form from submitting via traditional means
+}

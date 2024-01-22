@@ -132,8 +132,7 @@ document.addEventListener("DOMContentLoaded", function() {
         method: 'GET',
         dataType: 'json',
         data: {
-            action: 'getFavoriteRecipes', // Adicione a ação aqui
-            userId: userIdFromPHP // Substitua 1 pelo valor real do ID do usuário
+            action: 'getTopFavoriteRecipes', // Adicione a ação aqui
         },
         success: function(response) {
             // Limpar a lista de receitas
@@ -382,4 +381,12 @@ function checkEmptyList(containerSelector) {
         container.css('height', ''); // Remova a altura se houver cartões
         container.removeClass('empty-list');
     }
+}
+
+function redirectSearch() {
+    var searchTerm = document.getElementById("searchInput").value;
+    if (searchTerm.trim() !== "") {
+        window.location.href = '../../PHP/Pages/SearchRecipes.php?search=' + searchTerm;
+    }
+    return false;  // Prevents the form from submitting via traditional means
 }

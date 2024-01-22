@@ -30,40 +30,53 @@ class RecipeController {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function getRecipesById($recipeId,$userLoggedIn) {
+    public function getRecipesById($recipeId, $userLoggedIn) {
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' AND Recipe_ID = :recipeId");
             $stmt->bindParam(':recipeId', $recipeId, PDO::PARAM_INT);
             $stmt->execute();
             $recipe = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            
+    
             $photos = $this->photosController->getPhotosByRecipeId($recipeId);
             $recipe['photos'] = $photos;
-
+    
             $hints = $this->hintsController->getHintsByRecipeId($recipeId);
             $recipe['hints'] = $hints;
-
+    
             $notes = $this->notesController->getNotesByRecipeId($recipeId);
             $recipe['notes'] = $notes;
-
+    
             $ingredients = $this->ingredientController->getIngredientsByRecipeId($recipeId);
             $recipe['ingredients'] = $ingredients;
-
+    
             $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
-            $recipe['categories']= $categories;
-
-            $stmt = $this->pdo->prepare("SELECT * FROM Favorites WHERE User_ID = :userLoggedIn AND Recipe_ID = :recipe_id");
-            $stmt->bindParam(':userLoggedIn', $userLoggedIn, PDO::PARAM_STR);
-            $stmt->bindParam(':recipe_id', $recipeId, PDO::PARAM_STR);
-            $stmt->execute();
-            $rowCount = $stmt->rowCount();
+            $recipe['categories'] = $categories;
+    
+            // Adicionar contagem de favoritos
+            $stmtFavorites = $this->pdo->prepare("SELECT COUNT(*) as FavoriteCount FROM Favorites WHERE Recipe_ID = :recipe_id");
+            $stmtFavorites->bindParam(':recipe_id', $recipeId, PDO::PARAM_INT);
+            $stmtFavorites->execute();
+            $favoriteCount = $stmtFavorites->fetch(PDO::FETCH_ASSOC)['FavoriteCount'];
+            $recipe['favoriteCount'] = $favoriteCount;
+    
+            // Adicionar contagem de compartilhamentos
+            $stmtShares = $this->pdo->prepare("SELECT COUNT(*) as ShareCount FROM Shared_Recipes WHERE Recipe_ID = :recipe_id");
+            $stmtShares->bindParam(':recipe_id', $recipeId, PDO::PARAM_INT);
+            $stmtShares->execute();
+            $shareCount = $stmtShares->fetch(PDO::FETCH_ASSOC)['ShareCount'];
+            $recipe['shareCount'] = $shareCount;
+    
+            $stmtFavoriteStatus = $this->pdo->prepare("SELECT * FROM Favorites WHERE User_ID = :userLoggedIn AND Recipe_ID = :recipe_id");
+            $stmtFavoriteStatus->bindParam(':userLoggedIn', $userLoggedIn, PDO::PARAM_STR);
+            $stmtFavoriteStatus->bindParam(':recipe_id', $recipeId, PDO::PARAM_STR);
+            $stmtFavoriteStatus->execute();
+            $rowCount = $stmtFavoriteStatus->rowCount();
             $isFavorited = ($rowCount > 0);
             $recipe['isFavorited'] = $isFavorited;
-
+    
             $creator = $this->userController->getUserById($recipe[0]['User_ID']);
             $recipe['creator'] = $creator;
-
+    
             // Retorne a resposta JSON
             header('Content-Type: application/json');
             echo json_encode(['recipe' => $recipe]);
@@ -74,7 +87,6 @@ class RecipeController {
             exit;
         }
     }
-
     public function getRecipes() {
         try {
             $stmt = $this->pdo->query("SELECT * FROM Recipe WHERE TRIM(Recipe_Name) <> '' ORDER BY Creation_Date DESC LIMIT 15");
@@ -152,11 +164,16 @@ class RecipeController {
             $stmt = $this->pdo->prepare("INSERT INTO Favorites (User_ID, Recipe_ID) VALUES (:user_id, :recipe_id)");
             $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
             $stmt->bindParam(':recipe_id', $recipe_id, PDO::PARAM_STR);
-
             $stmt->execute();
 
+            $stmtFavorites = $this->pdo->prepare("SELECT COUNT(*) as FavoriteCount FROM Favorites WHERE Recipe_ID = :recipe_id");
+            $stmtFavorites->bindParam(':recipe_id', $recipe_id, PDO::PARAM_INT);
+            $stmtFavorites->execute();
+            $favoriteCount = $stmtFavorites->fetch(PDO::FETCH_ASSOC)['FavoriteCount'];
+            $recipe['favoriteCount'] = $favoriteCount;
+
             // Retorna o ID da receita criada
-            return true;
+            return $recipe;
         } catch (PDOException $e) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
@@ -170,9 +187,15 @@ class RecipeController {
             $stmt->bindParam(':recipe_id', $recipe_id, PDO::PARAM_STR);
     
             $stmt->execute();
+
+            $stmtFavorites = $this->pdo->prepare("SELECT COUNT(*) as FavoriteCount FROM Favorites WHERE Recipe_ID = :recipe_id");
+            $stmtFavorites->bindParam(':recipe_id', $recipe_id, PDO::PARAM_INT);
+            $stmtFavorites->execute();
+            $favoriteCount = $stmtFavorites->fetch(PDO::FETCH_ASSOC)['FavoriteCount'];
+            $recipe['favoriteCount'] = $favoriteCount;
     
             // Retorna true para indicar sucesso
-            return true;
+            return $recipe;
         } catch (PDOException $e) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
@@ -386,25 +409,40 @@ class RecipeController {
 
     public function searchRecipes($searchParam) {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM Recipe
-                WHERE (Recipe_Name LIKE :searchParam OR Recipe_Description LIKE :searchParam)
-                AND TRIM(Recipe_Name) <> ''");
-
-            $searchParam = '%' . $searchParam . '%';
-            $stmt->bindParam(':searchParam', $searchParam, PDO::PARAM_STR);
+            $stmt = $this->pdo->prepare("
+                SELECT * FROM Recipe
+                WHERE TRIM(Recipe_Name) <> '' AND (
+                    Recipe_Name LIKE :searchParamStart
+                    OR Recipe_Name LIKE :searchParamMiddle
+                    OR Recipe_Description LIKE :searchParam
+                )
+                ORDER BY
+                    CASE
+                        WHEN Recipe_Name LIKE :searchParamStart THEN 0
+                        WHEN Recipe_Name LIKE :searchParamMiddle THEN 1
+                        ELSE 2
+                    END,
+                    Recipe_Name ASC
+            ");
+    
+            $searchParamStart = $searchParam . '%';
+            $searchParamMiddle = '%' . $searchParam . '%';
+            $stmt->bindParam(':searchParamStart', $searchParamStart, PDO::PARAM_STR);
+            $stmt->bindParam(':searchParamMiddle', $searchParamMiddle, PDO::PARAM_STR);
+            $stmt->bindParam(':searchParam', $searchParamMiddle, PDO::PARAM_STR);
             $stmt->execute();
-
+    
             $searchedRecipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
             foreach ($searchedRecipes as &$recipe) {
                 $recipeId = $recipe['Recipe_ID'];
                 $photos = $this->photosController->getPhotosByRecipeId($recipeId);
                 $recipe['photos'] = $photos;
-
+    
                 $categories = $this->categoryController->getCategoryByRecipeId($recipeId);
                 $recipe['categories'] = $categories;
             }
-
+    
             return $searchedRecipes;
         } catch (PDOException $e) {
             header('Content-Type: application/json');
@@ -412,6 +450,7 @@ class RecipeController {
             exit;
         }
     }
+    
     
 }
 $recipeController = new RecipeController();
@@ -505,7 +544,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             case 'getTopFavoriteRecipes':
                 $topFavoriteRecipes = $recipeController->getTopFavoriteRecipes();
                 header('Content-Type: application/json');
-                echo json_encode(['topFavoriteRecipes' => $topFavoriteRecipes]);
+                echo json_encode(['recipeDetails' => $topFavoriteRecipes]);
                 exit;
 
             case 'searchRecipes':
@@ -513,7 +552,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     $searchParam = $_GET['searchParam'];
                     $searchedRecipes = $recipeController->searchRecipes($searchParam);
                     header('Content-Type: application/json');
-                    echo json_encode(['searchedRecipes' => $searchedRecipes]);
+                    echo json_encode(['recipeDetails' => $searchedRecipes]);
                     exit;
                 } else {
                     header('Content-Type: application/json');
@@ -561,7 +600,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         case 'SetFavorites':
             if (isset($_POST['recipeId'], $_POST['userId'])) {
                 $result = $recipeController->SetFavorites($_POST['recipeId'], $_POST['userId']);
-                handleResult($result);
+                header('Content-Type: application/json');
+                echo json_encode(['result' => $result]);
             } else {
                 handleErrorResponse('Invalid request or missing parameters');
             }
@@ -570,7 +610,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         case 'UndoFavorites':
             if (isset($_POST['recipeId'], $_POST['userId'])) {
                 $result = $recipeController->UndoFavorites($_POST['recipeId'], $_POST['userId']);
-                handleResult($result);
+                header('Content-Type: application/json');
+                echo json_encode(['result' => $result]);
             } else {
                 handleErrorResponse('Invalid request or missing parameters');
             }

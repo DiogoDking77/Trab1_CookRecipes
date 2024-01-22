@@ -1,4 +1,5 @@
-
+var likesCount = 0;
+var sharesCount = 0;
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -15,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function() {
             userId: userIdFromPHP // Substitua 1 pelo valor real do ID da receita desejada
         },
         success: function(response) {
+            likesCount = response.recipe.favoriteCount;
+            sharesCount = response.recipe.shareCount;
             displayRecipeDetails(response.recipe);
         },
         error: function(xhr, status, error) {
@@ -40,17 +43,28 @@ function editarReceita(recipeId, userId) {
 
 function displayRecipeDetails(recipe) {
 
+    
+
     var buttonsHtml = '<div class="d-flex justify-content-end">';
 
     if (recipe.isFavorited) {
         // Se for true, definir a classe do ícone como "fas fa-heart"
-        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger favorite" onclick="toggleFavorite(this)"><i class="fas fa-heart"></i></button>';
+        buttonsHtml += '<div class="d-flex flex-column align-items-center">';
+        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger favorite" onclick="toggleFavorite(this, ' + likesCount + ')" data-recipe-id="' + recipe.recipeId + '"><i class="fas fa-heart"></i></button>';
+        buttonsHtml += '<span class="ml-1 small" id="likeCount_' + recipe.recipeId + '">' + likesCount + '</span>';
+        buttonsHtml += '</div>';
     } else {
         // Se for false, definir a classe do ícone como "far fa-heart"
-        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></button>';
+        buttonsHtml += '<div class="d-flex flex-column align-items-center">';
+        buttonsHtml += '<button class="btn btn-outline-light border-0 opacity-100 text-danger" onclick="toggleFavorite(this, ' + likesCount + ')" data-recipe-id="' + recipe.recipeId + '"><i class="far fa-heart"></i></button>';
+        buttonsHtml += '<span class="ml-1 small" id="likeCount_' + recipe.recipeId + '">' + likesCount + '</span>';
+        buttonsHtml += '</div>';
     }
-
+    
+    buttonsHtml += '<div class="d-flex flex-column align-items-center">';
     buttonsHtml += '<button class="btn btn-outline-light border-0" onclick="ShareRecipe()"><i class="fas fa-share text-primary"></i></button>';
+    buttonsHtml += '<span class="ml-1 small strong" id="shareCount_' + recipe.recipeId + '">' + sharesCount + '</span>';
+    buttonsHtml += '</div>';    
 
     if (userIdFromPHP && userIdFromPHP === recipe[0].User_ID) {
         var urlParams = new URLSearchParams(window.location.search);
@@ -125,12 +139,15 @@ console.log(categoryTags)
                 ${mainPhotoHtml}
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-md-6 category-container d-flex flex-nowrap overflow-auto mb-1 mt-1">
+         <div>
+            ${categoryTags}
+         </div>
+        </div>
+        <div class="col-md-6">
             ${buttonsHtml}
         </div>
-        <div class="col-12 category-container d-flex flex-nowrap overflow-auto mb-1 mt-1">
-            ${categoryTags}
-        </div>
+        
         <div class="col-md-12">
             <p>${recipe[0].Recipe_Description}</p>
         </div>
@@ -184,7 +201,7 @@ document.getElementById('recipe-details').innerHTML = recipeDetailsHtml;
     document.getElementById('photo-gallery').innerHTML = photoGalleryHtml;
 }
 
-function toggleFavorite(button) {
+function toggleFavorite(button, like_count) {
     // Alternar a classe 'favorited' no botão
     button.classList.toggle('favorite');
 
@@ -194,43 +211,19 @@ function toggleFavorite(button) {
         // Quando favoritado, usa o ícone sólido
         icon.classList.remove('far');
         icon.classList.add('fas');
-        SetFavorites();
+        SetFavorites(button);
     } else {
         // Quando não favoritado, usa o ícone contornado
         icon.classList.remove('fas');
         icon.classList.add('far');
-        UndoFavorites();
+        UndoFavorites(button);
     }
 }
 
-function UndoFavorites() {
+function SetFavorites(button) {
     var urlParams = new URLSearchParams(window.location.search);
     var recipeId = urlParams.get('id');
-    // Aqui você pode fazer a chamada AJAX para o método 'UndoFavorites' no servidor
-    $.ajax({
-        url: '../../Controllers/RecipeController.php',
-        method: 'POST',
-        dataType: 'json',
-        data: {
-            action: 'UndoFavorites',
-            recipeId: recipeId,
-            userId: userIdFromPHP
-        },
-        success: function(response) {
-            // Lógica para manipular a resposta de sucesso, se necessário
-            console.log('Recipe unfavorited successfully');
-        },
-        error: function(xhr, status, error) {
-            // Lógica para lidar com erros na solicitação
-            console.error('Erro ao desfavoritar a receita:', error);
-        }
-    });
-}
-
-function SetFavorites() {
-    var urlParams = new URLSearchParams(window.location.search);
-    var recipeId = urlParams.get('id');
-    // Aqui você pode fazer a chamada AJAX para o método 'SetFavorites' no servidor
+    
     $.ajax({
         url: '../../Controllers/RecipeController.php',
         method: 'POST',
@@ -241,15 +234,47 @@ function SetFavorites() {
             userId: userIdFromPHP
         },
         success: function(response) {
-            // Lógica para manipular a resposta de sucesso, se necessário
             console.log('Recipe favorited successfully');
+            // Atualizar likesCount com o novo valor
+            likesCount = response.result.favoriteCount;
+            
+            // Restante do código...
         },
         error: function(xhr, status, error) {
-            // Lógica para lidar com erros na solicitação
             console.error('Erro ao favoritar a receita:', error);
         }
     });
 }
+
+function UndoFavorites(button) {
+    var urlParams = new URLSearchParams(window.location.search);
+    var recipeId = urlParams.get('id');
+    
+    $.ajax({
+        url: '../../Controllers/RecipeController.php',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'UndoFavorites',
+            recipeId: recipeId,
+            userId: userIdFromPHP
+        },
+        success: function(response) {
+            console.log('Recipe unfavorited successfully');
+            // Atualizar likesCount com o novo valor
+            likesCount = response.result.favoriteCount;
+            
+            // Restante do código...
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao desfavoritar a receita:', error);
+        }
+    });
+}
+
+
+
+
 
 var users;
 var selectedUsersIndex = [];
@@ -509,4 +534,12 @@ function toggleEditDeleteButtons() {
     if (editDeleteButtons) {
         editDeleteButtons.classList.toggle('show');
     }
+}
+
+function redirectSearch() {
+    var searchTerm = document.getElementById("searchInput").value;
+    if (searchTerm.trim() !== "") {
+        window.location.href = '../../PHP/Pages/SearchRecipes.php?search=' + searchTerm;
+    }
+    return false;  // Prevents the form from submitting via traditional means
 }

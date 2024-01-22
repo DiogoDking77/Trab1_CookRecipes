@@ -43,7 +43,7 @@ if (isset($_GET['logout'])) {
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(103deg, rgba(91, 91, 91, 1) 0%, rgba(59, 59, 59, 1) 98%); border-bottom: 5px solid transparent; border-image-slice: 1; border-image-source: linear-gradient(90deg, rgba(156, 105, 14, 1) 0%, rgba(180, 124, 20, 1) 93%); border-image-width: 1 1 5px 1;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
@@ -63,9 +63,8 @@ if (isset($_GET['logout'])) {
                             Recipes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">New Recipes</a></li>
                             <li><a class="dropdown-item" href="yourRecipes.php">Your Recipes</a></li>
-                            <li><a class="dropdown-item" href="#">Favorite Recipes</a></li>
+                            <li><a class="dropdown-item" href="FavoritedRecipes.php">Favorite Recipes</a></li>
                             <li><a class="dropdown-item" href="SharedRecipes.php">Shared Recipes</a></li>
                         </ul>
                     </li>
@@ -79,10 +78,10 @@ if (isset($_GET['logout'])) {
                         <a class="nav-link text-white" href="login.php">Logout</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
+                <div class="d-flex">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-light" onclick="redirectSearch()" type="submit">Search</button>
+                </div>
             </div>
         </div>
     </nav>
