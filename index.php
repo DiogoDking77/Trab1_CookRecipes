@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <!-- Place your logo here -->
-                <img src="../../Images/logo2.png" alt="Logo" height="50" style="max-height: 60px;">
+                <img src="Images/logo2.png" alt="Logo" height="50" style="max-height: 60px;">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,10 +95,10 @@
                 <div class="row">
                     <div class="col-md-12 recipe-card-principal">
                         <div class="card-total">
-                            <div class="col-lg-6 image-section">
+                            <div class="col-md-6 image-section">
                                 <img src="Images/Chocolate_IceCream.jpg" alt="Chocolate Ice Cream">
                             </div>
-                            <div class="col-lg-6 content-section">
+                            <div class="col-md-6 content-section">
                                 <h3>Chocolate Ice Cream</h3>
                                 <p>A delicious and creamy chocolate ice cream that you can easily make at home. Perfect for satisfying your sweet tooth!</p>
                                 <h4>Ingredients:</h4>

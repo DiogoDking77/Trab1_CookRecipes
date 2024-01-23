@@ -211,16 +211,37 @@ class RecipeController {
             $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
             $recipeId = $this->pdo->lastInsertId();
-            foreach ($ingredients as $ingredient) {
-                $this->ingredientController->addIngredient($ingredient['name'], $ingredient['quantity'], $recipeId);
+    
+            // Verifica se o array de ingredients não está vazio
+            if (!empty($ingredients)) {
+                foreach ($ingredients as $ingredient) {
+                    // Verifica se tanto o nome quanto a quantidade não estão vazios
+                    if (!empty($ingredient['name']) && !empty($ingredient['quantity'])) {
+                        $this->ingredientController->addIngredient($ingredient['name'], $ingredient['quantity'], $recipeId);
+                    }
+                }
             }
-            foreach ($hints as $hint) {
-                $this->hintsController->addHint($hint, $recipeId);
+    
+            // Verifica se o array de hints não está vazio
+            if (!empty($hints)) {
+                foreach ($hints as $hint) {
+                    // Verifica se o hint não está vazio
+                    if (!empty(trim($hint))) {
+                        $this->hintsController->addHint($hint, $recipeId);
+                    }
+                }
             }
-            foreach ($notes as $note) {
-                $this->notesController->addNotes($note, $recipeId);
+    
+            // Verifica se o array de notes não está vazio
+            if (!empty($notes)) {
+                foreach ($notes as $note) {
+                    // Verifica se a note não está vazia
+                    if (!empty(trim($note))) {
+                        $this->notesController->addNotes($note, $recipeId);
+                    }
+                }
             }
-            
+    
             header('Content-Type: application/json');
             echo json_encode(['success' => true, 'recipeId' => $recipeId]); // Adiciona o recipeId à resposta JSON
             exit;
@@ -230,6 +251,8 @@ class RecipeController {
             exit;
         }
     }
+    
+    
     public function editRecipe($recipeId, $name, $description, $instructions, $ingredients, $hints, $notes, $userId) {
         try {
             // Atualiza os dados da receita
@@ -249,14 +272,24 @@ class RecipeController {
     
             // Atualiza as dicas
             $this->hintsController->deleteHints($recipeId); // Remove as dicas existentes
-            foreach ($hints as $hint) {
-                $this->hintsController->addHint($hint, $recipeId);
+            if (!empty($hints)) {
+                foreach ($hints as $hint) {
+                    // Verifica se o hint não está vazio
+                    if (!empty(trim($hint))) {
+                        $this->hintsController->addHint($hint, $recipeId);
+                    }
+                }
             }
     
             // Atualiza as notas
             $this->notesController->deleteNotes($recipeId); // Remove as notas existentes
-            foreach ($notes as $note) {
-                $this->notesController->addNotes($note, $recipeId);
+            if (!empty($notes)) {
+                foreach ($notes as $note) {
+                    // Verifica se a note não está vazia
+                    if (!empty(trim($note))) {
+                        $this->notesController->addNotes($note, $recipeId);
+                    }
+                }
             }
     
             header('Content-Type: application/json');
